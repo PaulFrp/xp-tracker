@@ -1,0 +1,48 @@
+.category-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* 2 cards per row */
+    gap: 30px;
+    justify-content: center;
+    align-items: center;
+    max-width: 800px;
+    margin: 40px auto;
+}
+
+.card {
+    background-color: #f2f2f2;
+    border-radius: 16px;
+    padding: 16px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+.category-icon {
+    width: 80px;
+    margin-bottom: 10px;
+}
+
+.skill-bar {
+    margin-top: 10px;
+    font-size: 0.9em;
+    text-align: left;
+}
+
+.xp-bar {
+    background-color: #ddd;
+    border-radius: 10px;
+    height: 12px;
+    width: 100%;
+    overflow: hidden;
+    margin-top: 4px;
+}
+
+.fill {
+    height: 100%;
+    background-color: crimson;
+    transition: width 0.4s ease-in-out;
+}
+
+.card.red .fill { background-color: crimson; }
+.card.blue .fill { background-color: royalblue; }
+.card.green .fill { background-color: seagreen; }
+.card.gold .fill { background-color: goldenrod; }

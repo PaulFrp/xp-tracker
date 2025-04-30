@@ -1,0 +1,122 @@
+<!-- === templates/index.html === -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>XP Tracker</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+    <header>
+        <h1>🧭 XP Tracker</h1>
+        <section id="daily-challenges">
+            <h2>📅 Daily Challenges</h2>
+            <ul>
+                <li>🏋️‍♂️ 100 Gym exercises <progress value="0" max="100"></progress></li>
+                <li>🏃‍♂️ 2.5 km Running <progress value="0" max="2.5"></progress></li>
+                <li>📖 Read 50 Pages <progress value="0" max="50"></progress></li>
+                <li>💻 30min Deep Work <progress value="0" max="30"></progress></li>
+            </ul>
+        </section>
+
+        <section id="add-xp">
+            <h2>➕ Add XP</h2>
+            <form id="xp-form">
+                <label for="xp-amount">XP Amount:</label>
+                <input type="number" id="xp-amount" name="xp-amount" min="1" required>
+
+                <label for="skill-select">Choose Skill:</label>
+                <select id="skill-select" name="skill-select" required>
+                    {% for skill, category, xp, level in stats %}
+                        <option value="{{ skill }}">{{ skill }}</option>
+                    {% endfor %}
+                </select>
+
+                <button type="submit">Add XP</button>
+            </form>
+        </section>
+
+        <section id="delete-xp">
+            <h2>➕ Delete XP</h2>
+            <form id="xp-delete-form">
+                <label for="xp-delete-amount">XP Amount:</label>
+                <input type="number" id="xp-delete-amount" name="xp-delete-amount" min="1" required>
+
+                <label for="skill-delete-select">Choose Skill:</label>
+                <select id="skill-delete-select" name="skill-delete-select" required>
+                    {% for skill, category, xp, level in stats %}
+                        <option value="{{ skill }}">{{ skill }}</option>
+                    {% endfor %}
+                </select>
+
+                <button type="submit-">Delete XP</button>
+            </form>
+        </section>
+    </header>
+
+    <main>
+        <div class="category-grid">
+            {% for category in ["Red", "Blue", "Green", "Gold"] %}
+                <div class="card {{ category|lower }}">
+                    <img src="../static/images/icon_{{category|lower }}.png" alt="{{ category }} Icon" class="category-icon">
+                    <div class="xp-bar-group">
+                        {% for skill, cat, xp, level in stats %}
+                            {% if cat == category %}
+                                <div class="skill-bar">
+                                    <span>{{ skill }} (Lvl {{ level }})</span>
+                                    <div class="xp-bar">
+                                        <div class="fill" style="width: {{ (xp / (level * 100)) * 100 }}%"></div>
+                                    </div>
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+        
+    </main>
+
+    <script>
+        document.getElementById("xp-form").addEventListener("submit", async function (e) {
+            e.preventDefault();
+            const amount = document.getElementById("xp-amount").value;
+            const skill = document.getElementById("skill-select").value;
+
+            const response = await fetch("/add_xp", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ skill: skill, xp: amount })
+            });
+
+            if (response.ok) {
+                location.reload();
+            } else {
+                alert("Failed to add XP");
+            }
+        });
+
+        document.getElementById("xp-delete-form").addEventListener("submit", async function (e) {
+            e.preventDefault();
+            const amount = document.getElementById("xp-delete-amount").value;
+            const skill = document.getElementById("skill-delete-select").value;
+
+            const response = await fetch("/delete_xp", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ skill: skill, xp: amount })
+            });
+
+            if (response.ok) {
+                location.reload();
+            } else {
+                alert("Failed to delete XP");
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>XP Tracker</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+    <nav style="background-color: #f8f9fa; padding: 10px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #ddd;">
+        <div style="display: flex; gap: 15px; align-items: center;">
+            <a href="{{ url_for('index') }}" style="text-decoration: none; font-weight: bold; color: #333;">🏠 Home</a>
+            {% for category in ["Red", "Blue", "Green", "Gold"] %}
+                <a href="/card_{{ category|lower }}" style="text-decoration: none; color: {{ category|lower }};">
+                    {{ category }}
+                </a>
+            {% endfor %}
+            <a  href=  "{{ url_for('titles')}}" style="text-decoration: none; font-weight: bold; color: #333"> Titles</a>
+        </div>
+        <div>
+            <form method="POST" action="{{ url_for('logout') }}">
+                <button type="submit" style="background-color: #dc3545; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer;">
+                    Logout
+                </button>
+            </form>
+        </div>
+    </nav>
+
+    <h1>🏅 Titles Unlocked</h1>
+    
+    {% if unlocked_titles %}
+    <div class="titles-container">
+        {% for skill, titles in unlocked_titles.items() %}
+            <div class="skill-section">
+                <h2>{{ skill }}</h2>
+                <ul>
+                    {% for level, title in titles %}
+                        <li>Level {{ level }} – <strong>{{ title }}</strong></li>
+                    {% endfor %}
+                </ul>
+            </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <p>You haven't unlocked any titles yet. Keep leveling up!</p>
+    {% endif %}
+</body>
+
+

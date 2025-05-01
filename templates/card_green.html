@@ -16,6 +16,7 @@
                     {{ category }}
                 </a>
             {% endfor %}
+            <a  href=  "{{ url_for('titles')}}" style="text-decoration: none; font-weight: bold; color: #333"> Titles</a>
         </div>
         <div>
             <form method="POST" action="{{ url_for('logout') }}">
@@ -28,7 +29,7 @@
     
     <header>
         <div style="text-align: center;">
-            <img src="../static/images/icon_green.png" alt="{{ category }} Icon" class="icon-solo">
+            <img src="../static/images/icons/icon_green.png" alt="{{ category }} Icon" class="icon-solo">
         </div>
     </header>
 

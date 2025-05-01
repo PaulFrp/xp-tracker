@@ -16,6 +16,7 @@
                     {{ category }}
                 </a>
             {% endfor %}
+            <a  href=  "{{ url_for('titles')}}" style="text-decoration: none; font-weight: bold; color: #333"> Titles</a>
         </div>
         <div>
             <form method="POST" action="{{ url_for('logout') }}">
@@ -28,13 +29,13 @@
     
     <header>
         <div style="text-align: center;">
-            <img src="../static/images/icon_red.png" alt="{{ category }} Icon" class="icon-solo">
+            <img src="../static/images/icons/icon_red.png" alt="{{ category }} Icon" class="icon-solo">
         </div>
     </header>
 
     <main>
         <div class="category-solo">
-            {% for category in ["Red"] %}
+          </form>  {% for category in ["Red"] %}
             <div class="card {{ category|lower }}">
                 <div class="category-header" onclick="toggleDetails('{{ category|lower }}')">
                     <span class="arrow">▼</span>
@@ -116,6 +117,8 @@
     </main>
 
     <script>
+
+
         document.getElementById("xp-form").addEventListener("submit", async function (e) {
             e.preventDefault();
             const amount = document.getElementById("xp-amount").value;
@@ -130,11 +133,34 @@
             });
 
             if (response.ok) {
-                location.reload();
+                const data = await response.json();
+                const newLevel = data.current_level;
+                const previousLevel = data.old_level;
+                if (newLevel > previousLevel) {
+                    const skillElements = document.querySelectorAll(".skill-bar .skill-name");
+
+                    skillElements.forEach(el => {
+                    if (el.textContent.includes(skill)) {
+                        const skillBar = el.closest(".skill-bar");
+                        skillBar.classList.add("level-up");
+
+                        // Remove class after animation so it can be retriggered
+                        skillBar.addEventListener("animationend", () => {
+                            skillBar.classList.remove("level-up");
+                        }, { once: true });
+                    }
+                    });
+                    await new Promise(resolve => setTimeout(resolve, 1000));
+                    location.reload();
+                }else{
+                    location.reload();
+                }
+
             } else {
                 alert("Failed to add XP");
             }
-        });
+            }
+        );
 
         document.getElementById("xp-delete-form").addEventListener("submit", async function (e) {
             e.preventDefault();

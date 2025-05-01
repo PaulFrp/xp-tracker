@@ -257,3 +257,24 @@ form button:hover {
     background-color: #4caf50;
     border-radius: 10px;
 }
+
+/* Level up animation*/
+
+@keyframes levelUpAnimation {
+    0% {
+        transform: scale(1);
+        background-color: transparent;
+    }
+    50% {
+        transform: scale(1.1);
+        background-color: #ffd700; /* Gold or other color indicating level-up */
+    }
+    100% {
+        transform: scale(1);
+        background-color: transparent;
+    }
+}
+
+.skill-bar.level-up {
+    animation: levelUpAnimation 0.5s ease-in-out;
+}

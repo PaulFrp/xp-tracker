@@ -15,6 +15,7 @@
                     {{ category }}
                 </a>
             {% endfor %}
+            <a  href=  "{{ url_for('titles')}}" style="text-decoration: none; font-weight: bold; color: #333"> Titles</a>
         </div>
         <div>
             <form method="POST" action="{{ url_for('logout') }}">
@@ -26,6 +27,7 @@
     </nav>
     
     <header>
+        <h1 style="text-align: center;">Hello {{username}}</h1>
         <section id="daily-challenges">
             <h2>📅 Daily Challenges</h2>
             <ul class="challenge-list">
@@ -55,7 +57,7 @@
             {% for category in ["Red", "Blue", "Green", "Gold"] %}
                 <a href= "/card_{{category|lower}}" style = "text-decoration: none;">
                 <div class="card {{ category|lower }}">
-                    <img src="../static/images/icon_{{category|lower }}.png" alt="{{ category }} Icon" class="category-icon">
+                    <img src="../static/images/icons/icon_{{category|lower }}.png" alt="{{ category }} Icon" class="category-icon">
                     <div class="xp-bar-group">
                         {% for skill, cat, xp, level in stats %}
                             {% if cat == category %}

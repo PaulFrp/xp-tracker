@@ -4,6 +4,10 @@ from flask import Flask, render_template, request, jsonify, session, redirect, u
 import sqlite3
 from dotenv import load_dotenv
 import os
+import json
+
+with open(os.path.join(os.path.dirname(__file__), 'titles.json')) as f:
+    TITLES = json.load(f)
 
 # Define shared data outside the functions
 descriptions = {
@@ -200,8 +204,10 @@ def dashboard():
         stats = c.fetchall()
         c.execute("SELECT challenge, completed FROM daily WHERE user_id = ?", (user_id,))
         daily_challenges = c.fetchall()
+        c.execute("SELECT username FROM users WHERE id = ?", (user_id,))
+        username = c.fetchone()[0]
 
-    return render_template("dashboard.html", stats=stats, daily_challenges=daily_challenges)
+    return render_template("dashboard.html", stats=stats, daily_challenges=daily_challenges, username=username)
 
 
 @app.route("/card_red")
@@ -272,6 +278,35 @@ def card_gold():
         skill_guides=skill_guides
         )
 
+@app.route('/titles')
+def titles():
+    user_id = session.get('user_id')
+    if not user_id:
+        return redirect(url_for('login'))
+
+    with sqlite3.connect("database.db") as conn:
+        c = conn.cursor()
+        c.execute("SELECT skill, level FROM progress WHERE user_id = ?", (user_id,))
+        stats = c.fetchall()
+
+    # Convert skill stats into a dict: { "Strength": 35, "Intelligence": 12, ... }
+    user_levels = {skill: level for skill, level in stats}
+
+    # Determine unlocked titles
+    unlocked_titles = {}
+    for skill, level in user_levels.items():
+        available_titles = TITLES.get(skill, {})
+        unlocked = [
+            (int(req_level), title)
+            for req_level, title in available_titles.items()
+            if level >= int(req_level)
+        ]
+        if unlocked:
+            unlocked_titles[skill] = sorted(unlocked)
+
+    return render_template("titles.html", unlocked_titles=unlocked_titles)
+
+
 @app.route('/add_xp', methods=['POST'])
 def add_xp():
     data = request.get_json()
@@ -295,9 +330,10 @@ def add_xp():
             new_xp -= current_level * 100
             cursor.execute("UPDATE progress SET xp = ? WHERE skill = ? AND user_id = ?", (new_xp, skill, user_id))
             current_level += 1
+            old_level = current_level - 1
             conn.commit()
         conn.close()
-        return jsonify(success=True)
+        return jsonify({ "old_level" : old_level,"current_level": current_level, "skill": skill })
     else:
         conn.close()
         return jsonify(success=False, error="Skill not found"), 404

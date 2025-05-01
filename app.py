@@ -1,82 +1,9 @@
 # === app.py ===
 from datetime import datetime
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, session, redirect, url_for
 import sqlite3
-# Removed unused import
-
-app = Flask(__name__)
-
-def init_db():
-    with sqlite3.connect("database.db") as conn:
-        c = conn.cursor()
-        c.execute('''
-            CREATE TABLE IF NOT EXISTS progress (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                skill TEXT NOT NULL UNIQUE,
-                category TEXT NOT NULL,
-                xp INTEGER DEFAULT 0,
-                level INTEGER DEFAULT 1
-            )
-        ''')
-
-        skills = [
-            ("Strength", "Red"), ("Endurance", "Red"), ("Mobility", "Red"), ("Speed", "Red"),
-            ("Intelligence", "Blue"), ("Concentration", "Blue"), ("Logic", "Blue"), ("Creativity", "Blue"),
-            ("Dexterity", "Green"), ("Vitality", "Green"), ("Recovery", "Green"), ("Affection", "Green"),
-            ("Discipline", "Gold"), ("Planning", "Gold"), ("Reflection", "Gold"), ("Good deeds", "Gold")
-        ]
-
-        for skill, category in skills:
-            c.execute("INSERT OR IGNORE INTO progress (skill, category, xp, level) VALUES (?, ?, ?, ?)",
-                      (skill, category, 0, 1))
-        conn.commit()
-
-        c.execute('''
-            CREATE TABLE IF NOT EXISTS daily (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            challenge TEXT NOT NULL UNIQUE,
-            completed BOOLEAN DEFAULT 0
-            )
-        ''')
-
-        # Insert daily challenges if they don't already exist
-        challenges = ["Gym", "Running", "Reading", "Work"]
-        for challenge in challenges:
-            c.execute("INSERT OR IGNORE INTO daily (challenge, completed) VALUES (?, ?)", (challenge, 0))
-        
-        # Create a table to track the last reset date
-        c.execute('''
-            CREATE TABLE IF NOT EXISTS config (
-            key TEXT PRIMARY KEY,
-            value TEXT NOT NULL
-            )
-        ''')
-
-        # Initialize the last reset date if it doesn't exist
-        c.execute("INSERT OR IGNORE INTO config (key, value) VALUES ('last_reset_date', ?)", ("1970-01-01",))
-
-        # Check if the reset is needed
-        c.execute("SELECT value FROM config WHERE key = 'last_reset_date'")
-        last_reset_date = c.fetchone()[0]
-        current_date = datetime.now().strftime("%Y-%m-%d")
-
-        if current_date != last_reset_date:
-            # Reset daily challenges
-            c.execute("UPDATE daily SET completed = 0")
-            conn.commit()
-
-            # Update the last reset date
-            c.execute("UPDATE config SET value = ? WHERE key = 'last_reset_date'", (current_date,))
-
-@app.route("/")
-def index():
-    with sqlite3.connect("database.db") as conn:
-        c = conn.cursor()
-        c.execute("SELECT skill, category, xp, level FROM progress")
-        stats = c.fetchall()
-        c.execute("SELECT challenge, completed FROM daily")
-        daily_challenges = c.fetchall()
-    return render_template("index.html", stats=stats , daily_challenges=daily_challenges)
+from dotenv import load_dotenv
+import os
 
 # Define shared data outside the functions
 descriptions = {
@@ -131,11 +58,158 @@ skill_guides = {
     "Good deeds": "🤝 Help someone, donate, volunteer, pick up trash, small acts of kindness"
 }
 
+
+load_dotenv()  # Load environment variables from a .env file
+
+app = Flask(__name__)
+app.secret_key = os.getenv("SECRET_KEY", "default_secret_key")  # Use a default if SECRET_KEY is not set
+
+def init_db():
+    with sqlite3.connect("database.db") as conn:
+        c = conn.cursor()
+        c.execute('''
+            CREATE TABLE IF NOT EXISTS users (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                username TEXT NOT NULL UNIQUE,
+                password TEXT NOT NULL
+            )
+        ''')
+
+        c.execute('''
+            CREATE TABLE IF NOT EXISTS progress (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                user_id INTEGER NOT NULL,
+                skill TEXT NOT NULL,
+                category TEXT NOT NULL,
+                xp INTEGER DEFAULT 0,
+                level INTEGER DEFAULT 1, 
+                FOREIGN KEY(user_id) REFERENCES users(id)
+            )
+        ''')
+        
+
+        c.execute('''
+            CREATE TABLE IF NOT EXISTS daily (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                user_id INTEGER NOT NULL,
+                challenge TEXT NOT NULL,
+                completed BOOLEAN DEFAULT 0,
+                UNIQUE(user_id, challenge),
+                FOREIGN KEY(user_id) REFERENCES users(id)
+            )
+        ''')
+
+        
+        # Create a table to track the last reset date
+        c.execute('''
+            CREATE TABLE IF NOT EXISTS config (
+            key TEXT PRIMARY KEY,
+            value TEXT NOT NULL
+            )
+        ''')
+
+        # Initialize the last reset date if it doesn't exist
+        c.execute("INSERT OR IGNORE INTO config (key, value) VALUES ('last_reset_date', ?)", ("1970-01-01",))
+
+        # Check if the reset is needed
+        c.execute("SELECT value FROM config WHERE key = 'last_reset_date'")
+        last_reset_date = c.fetchone()[0]
+        current_date = datetime.now().strftime("%Y-%m-%d")
+
+        if current_date != last_reset_date:
+            # Reset daily challenges
+            c.execute("UPDATE daily SET completed = 0")
+            conn.commit()
+
+            # Update the last reset date
+            c.execute("UPDATE config SET value = ? WHERE key = 'last_reset_date'", (current_date,))
+
+
+@app.route("/")
+def index():
+    if 'user_id' in session:
+        return redirect(url_for('dashboard'))
+    return redirect(url_for('login'))
+
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+
+        conn = sqlite3.connect("database.db")
+        c = conn.cursor()
+        c.execute("SELECT id FROM users WHERE username = ? AND password = ?", (username, password))
+        user = c.fetchone()
+        conn.close()
+
+        if user:
+            session['user_id'] = user[0]
+            return redirect(url_for('dashboard'))  # or card_red, etc.
+        else:
+            return "Login failed"
+
+    return render_template("login.html")
+
+@app.route('/logout', methods=['POST'])
+def logout():
+    session.clear()
+    return redirect(url_for('login'))
+
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+        conn = sqlite3.connect("database.db")
+        c = conn.cursor()
+        c.execute("INSERT INTO users (username, password) VALUES (?, ?)", (username, password))
+        user_id = c.lastrowid
+
+        skills = [
+            ("Strength", "Red"), ("Endurance", "Red"), ("Mobility", "Red"), ("Speed", "Red"),
+            ("Intelligence", "Blue"), ("Concentration", "Blue"), ("Logic", "Blue"), ("Creativity", "Blue"),
+            ("Dexterity", "Green"), ("Vitality", "Green"), ("Recovery", "Green"), ("Affection", "Green"),
+            ("Discipline", "Gold"), ("Planning", "Gold"), ("Reflection", "Gold"), ("Good deeds", "Gold")
+        ]
+        for skill, category in skills:
+            c.execute("INSERT INTO progress (user_id, skill, category) VALUES (?, ?, ?)", (user_id, skill, category))
+        
+        daily_challenges = ["Gym", "Running", "Reading", "Work"]
+        for challenge in daily_challenges:
+            c.execute("INSERT INTO daily (user_id, challenge, completed) VALUES (?, ?, ?)", (user_id, challenge, 0))
+
+        conn.commit()
+        conn.close()
+        return redirect(url_for('login'))
+
+    return render_template("register.html")
+
+
+@app.route('/dashboard')
+def dashboard():
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+
+    user_id = session['user_id']
+    # Query skills for this user only
+    with sqlite3.connect("database.db") as conn:
+        c = conn.cursor()
+        c.execute("SELECT skill, category, xp, level FROM progress WHERE user_id = ?", (user_id,))
+        stats = c.fetchall()
+        c.execute("SELECT challenge, completed FROM daily WHERE user_id = ?", (user_id,))
+        daily_challenges = c.fetchall()
+
+    return render_template("dashboard.html", stats=stats, daily_challenges=daily_challenges)
+
+
 @app.route("/card_red")
 def card_red():
     with sqlite3.connect("database.db") as conn:
         c = conn.cursor()
-        c.execute("SELECT skill, category, xp, level FROM progress WHERE category = 'Red'")
+        user_id = session['user_id']
+        c.execute("SELECT skill, category, xp, level FROM progress WHERE category = 'Red' AND user_id = ?", (user_id,))
         stats = c.fetchall()
 
     return render_template(
@@ -151,7 +225,8 @@ def card_red():
 def card_blue():
     with sqlite3.connect("database.db") as conn:
         c = conn.cursor()
-        c.execute("SELECT skill, category, xp, level FROM progress WHERE category = 'Blue'")
+        user_id = session['user_id']
+        c.execute("SELECT skill, category, xp, level FROM progress WHERE category = 'Blue' AND user_id = ?", (user_id,))
         stats = c.fetchall()
 
     return render_template(
@@ -167,7 +242,8 @@ def card_blue():
 def card_green():
     with sqlite3.connect("database.db") as conn:
         c = conn.cursor()
-        c.execute("SELECT skill, category, xp, level FROM progress WHERE category = 'Green'")
+        user_id = session['user_id']
+        c.execute("SELECT skill, category, xp, level FROM progress WHERE category = 'Green' AND user_id = ?", (user_id,))
         stats = c.fetchall()
 
     return render_template(
@@ -183,7 +259,8 @@ def card_green():
 def card_gold():
     with sqlite3.connect("database.db") as conn:
         c = conn.cursor()
-        c.execute("SELECT skill, category, xp, level FROM progress WHERE category = 'Gold'")
+        user_id = session['user_id']
+        c.execute("SELECT skill, category, xp, level FROM progress WHERE category = 'Gold' AND user_id = ?", (user_id,))
         stats = c.fetchall()
 
     return render_template(
@@ -203,19 +280,20 @@ def add_xp():
 
     conn = sqlite3.connect('database.db')
     cursor = conn.cursor()
-    cursor.execute("SELECT xp FROM progress WHERE skill = ?", (skill,))
+    user_id = session['user_id']
+    cursor.execute("SELECT xp, level FROM progress WHERE user_id = ? AND skill = ?", (user_id, skill))
     row = cursor.fetchone()
 
     if row:
         new_xp = row[0] + xp_to_add
-        cursor.execute("UPDATE progress SET xp = ? WHERE skill = ?", (new_xp, skill))
+        cursor.execute("UPDATE progress SET xp = ? WHERE skill = ? AND  user_id = ?", (new_xp, skill, user_id))
         conn.commit()
         cursor.execute("SELECT level FROM progress WHERE skill = ?", (skill,))
         current_level = cursor.fetchone()[0]
         while new_xp >= current_level * 100: 
-            cursor.execute("UPDATE progress SET level = ? WHERE skill = ?", (current_level + 1, skill))
+            cursor.execute("UPDATE progress SET level = ? WHERE skill = ? AND user_id = ? ", (current_level + 1, skill, user_id))
             new_xp -= current_level * 100
-            cursor.execute("UPDATE progress SET xp = ? WHERE skill = ?", (new_xp, skill))
+            cursor.execute("UPDATE progress SET xp = ? WHERE skill = ? AND user_id = ?", (new_xp, skill, user_id))
             current_level += 1
             conn.commit()
         conn.close()
@@ -233,12 +311,13 @@ def delete_xp():
 
     conn = sqlite3.connect('database.db')
     cursor = conn.cursor()
-    cursor.execute("SELECT xp FROM progress WHERE skill = ?", (skill,))
+    user_id = session['user_id']
+    cursor.execute("SELECT xp, level FROM progress WHERE user_id = ? AND skill = ?", (user_id, skill))
     row = cursor.fetchone()
 
     if row:
         new_xp = row[0] - xp_to_delete
-        cursor.execute("UPDATE progress SET xp = ? WHERE skill = ?", (new_xp, skill))
+        cursor.execute("UPDATE progress SET xp = ? WHERE skill = ? AND user_id = ?", (new_xp, skill, user_id))
         conn.commit()
         cursor.execute("SELECT level FROM progress WHERE skill = ?", (skill,))
         current_level = cursor.fetchone()[0]
@@ -246,12 +325,12 @@ def delete_xp():
         while new_xp < 0: 
             if current_level == 1: 
                 new_xp = 0
-                cursor.execute("UPDATE progress SET xp = ? WHERE skill = ?", (new_xp, skill))
+                cursor.execute("UPDATE progress SET xp = ? WHERE skill = ? AND user_id = ?", (new_xp, skill, user_id))
                 break
             else:
-                cursor.execute("UPDATE progress SET level = ? WHERE skill = ?", (current_level - 1, skill))
+                cursor.execute("UPDATE progress SET level = ? WHERE skill = ? AND user_id = ? ", (current_level - 1, skill, user_id))
                 new_xp += (current_level - 1) * 100
-                cursor.execute("UPDATE progress SET xp = ? WHERE skill = ?", (new_xp, skill))
+                cursor.execute("UPDATE progress SET xp = ? WHERE skill = ? AND user_id = ?", (new_xp, skill, user_id))
                 current_level -= 1
         conn.commit()
         conn.close()
@@ -267,7 +346,8 @@ def daily_challenges():
     challenge = data.get('challenge')
     conn = sqlite3.connect("database.db")
     cursor = conn.cursor()
-    cursor.execute("UPDATE daily set completed = ?  WHERE challenge = ?", (1, challenge))
+    user_id = session['user_id']
+    cursor.execute("UPDATE daily set completed = ?  WHERE challenge = ? AND user_id = ?", (1, challenge, user_id))
     conn.commit()
     conn.close()
     return jsonify(success=True)

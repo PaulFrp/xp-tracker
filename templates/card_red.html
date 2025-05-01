@@ -1,3 +1,5 @@
+{% extends "base.html" %}
+{% block content %}
 <!-- === templates/index.html === -->
 <!DOCTYPE html>
 <html lang="en">
@@ -150,8 +152,7 @@
                         }, { once: true });
                     }
                     });
-                    await new Promise(resolve => setTimeout(resolve, 1000));
-                    location.reload();
+                    setTimeout(() => location.reload(), 600);
                 }else{
                     location.reload();
                 }
@@ -207,3 +208,4 @@
     </script>
 </body>
 </html>
+{% endblock %}

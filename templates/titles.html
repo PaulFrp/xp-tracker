@@ -1,3 +1,6 @@
+{% extends "base.html" %}
+
+{% block content %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -14,7 +17,7 @@
                     {{ category }}
                 </a>
             {% endfor %}
-            <a  href=  "{{ url_for('titles')}}" style="text-decoration: none; font-weight: bold; color: #333"> Titles</a>
+            <a href="{{ url_for('titles') }}" style="text-decoration: none; font-weight: bold; color: #333;"> Titles</a>
         </div>
         <div>
             <form method="POST" action="{{ url_for('logout') }}">
@@ -24,23 +27,75 @@
             </form>
         </div>
     </nav>
+
     <h1>🏅 Titles Unlocked</h1>
-    
+
     {% if unlocked_titles %}
     <div class="titles-container">
         {% for skill, titles in unlocked_titles.items() %}
-            <div class="skill-section">
-                <h2>{{ skill }}</h2>
-                <ul>
+            {% set category = skill_to_category[skill] %}
+            <div class="skill-box">
+                <h2 class="category-title border-{{ category|lower }}">{{ skill }}</h2>
+                <div class="title-grid">
                     {% for level, title in titles %}
-                        <li>Level {{ level }} – <strong>{{ title }}</strong></li>
+                        <div class="title-card border-{{ category|lower }} {% if title in current_selected_titles %}selected{% endif %}"
+                            data-title="{{ title }}" data-level="{{ level }}">
+                            <span class="level">Lvl {{ level }}</span>
+                            <span class="title">{{ title }}</span>
+                            <input type="checkbox" class="checkbox" {% if title in current_selected_titles %}checked{% endif %} hidden>
+                        </div>
                     {% endfor %}
-                </ul>
+                </div>
             </div>
         {% endfor %}
     </div>
     {% else %}
     <p>You haven't unlocked any titles yet. Keep leveling up!</p>
     {% endif %}
-</body>
 
+    <script>
+
+        
+        //THAT SHIT I NEED TO REVIEW BECAUSE IT WORKS FOR SELECTING AND DESELECTING AND IT IS FUCKING DARK MAGIC
+
+
+        // Handle clicking on title cards to toggle selection
+        document.querySelectorAll('.title-card').forEach(card => {
+            card.addEventListener('click', function() {
+                const title = card.getAttribute('data-title');
+                const userId = "{{ user_id }}";  // Pass user ID from Flask to JavaScript
+                const selected = card.classList.contains('selected');
+                const level = card.getAttribute('data-level');
+
+                // Toggle the selection state
+                if (selected) {
+                    card.classList.remove('selected');
+                    card.querySelector('.checkbox').checked = false;
+                    updateSelection(userId, title, 'remove');
+                } else {
+                    card.classList.add('selected');
+                    card.querySelector('.checkbox').checked = true;
+                    updateSelection(userId, title, 'add');
+                }
+                });
+            });
+
+        // Function to send the selection update to the server
+        function updateSelection(userId, title, action) {
+            fetch('/update_selected_titles', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    user_id: userId,
+                    title: title,
+                    action: action
+                })
+            });
+        }
+    </script>
+
+</body>
+</html>
+{% endblock %}

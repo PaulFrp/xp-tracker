@@ -1,6 +1,7 @@
 # === app.py ===
 from datetime import datetime
 from flask import Flask, render_template, request, jsonify, session, redirect, url_for
+from flask_socketio import SocketIO, emit
 import sqlite3
 from dotenv import load_dotenv
 import os
@@ -67,6 +68,7 @@ load_dotenv()  # Load environment variables from a .env file
 
 app = Flask(__name__)
 app.secret_key = os.getenv("SECRET_KEY", "default_secret_key")  # Use a default if SECRET_KEY is not set
+socketio = SocketIO(app)
 
 def init_db():
     with sqlite3.connect("database.db") as conn:
@@ -112,6 +114,14 @@ def init_db():
             )
         ''')
 
+        c.execute('''
+            CREATE TABLE IF NOT EXISTS selected_titles (
+            user_id INTEGER PRIMARY KEY,
+            selected_titles TEXT,
+            FOREIGN KEY(user_id) REFERENCES users(id)
+            )
+        ''')        
+
         # Initialize the last reset date if it doesn't exist
         c.execute("INSERT OR IGNORE INTO config (key, value) VALUES ('last_reset_date', ?)", ("1970-01-01",))
 
@@ -127,6 +137,8 @@ def init_db():
 
             # Update the last reset date
             c.execute("UPDATE config SET value = ? WHERE key = 'last_reset_date'", (current_date,))
+
+
 
 
 @app.route("/")
@@ -206,8 +218,11 @@ def dashboard():
         daily_challenges = c.fetchall()
         c.execute("SELECT username FROM users WHERE id = ?", (user_id,))
         username = c.fetchone()[0]
+        c.execute("SELECT selected_titles FROM selected_titles WHERE user_id = ?", (user_id,))
+        row = c.fetchone()
+        selected_titles = json.loads(row[0]) if row else []
 
-    return render_template("dashboard.html", stats=stats, daily_challenges=daily_challenges, username=username)
+    return render_template("dashboard.html", stats=stats, daily_challenges=daily_challenges, username=username, selected_titles=selected_titles)
 
 
 @app.route("/card_red")
@@ -280,7 +295,7 @@ def card_gold():
 
 @app.route('/titles')
 def titles():
-    user_id = session.get('user_id')
+    user_id = session.get('user_id')    
     if not user_id:
         return redirect(url_for('login'))
 
@@ -288,12 +303,13 @@ def titles():
         c = conn.cursor()
         c.execute("SELECT skill, level FROM progress WHERE user_id = ?", (user_id,))
         stats = c.fetchall()
+        c.execute("SELECT selected_titles FROM selected_titles WHERE user_id = ?", (user_id,))
+        row = c.fetchone()
+        current_selected_titles = json.loads(row[0]) if row and row[0] else []
 
-    # Convert skill stats into a dict: { "Strength": 35, "Intelligence": 12, ... }
     user_levels = {skill: level for skill, level in stats}
-
-    # Determine unlocked titles
     unlocked_titles = {}
+
     for skill, level in user_levels.items():
         available_titles = TITLES.get(skill, {})
         unlocked = [
@@ -303,8 +319,55 @@ def titles():
         ]
         if unlocked:
             unlocked_titles[skill] = sorted(unlocked)
+    
+    skill_to_category= {
+        "Strength": "Red", "Endurance": "Red", "Mobility": "Red", "Speed": "Red",
+        "Intelligence": "Blue", "Concentration": "Blue", "Logic": "Blue", "Creativity": "Blue",
+        "Dexterity": "Green", "Vitality": "Green", "Recovery": "Green", "Affection": "Green",
+        "Discipline": "Gold", "Planning": "Gold", "Reflection": "Gold", "Good deeds": "Gold"
+    }
 
-    return render_template("titles.html", unlocked_titles=unlocked_titles)
+    return render_template("titles.html", unlocked_titles=unlocked_titles, skill_to_category=skill_to_category, current_selected_titles=current_selected_titles,user_id=user_id)
+
+
+@app.route('/update_selected_titles', methods=['POST'])
+def update_selected_titles():
+    if request.method == 'POST':
+        data = request.get_json()
+        user_id = session.get('user_id')
+        title = data['title']
+        print(title)
+        action = data['action']
+        print(action)
+
+        with sqlite3.connect("database.db") as conn:
+            c = conn.cursor()
+            c.execute("SELECT selected_titles FROM selected_titles WHERE user_id = ?", (user_id,))
+            row = c.fetchone()
+
+            if row:
+                selected_titles = json.loads(row[0])
+            else:
+                selected_titles = []
+
+            # Add or remove the title based on the action
+            if action == 'add' and title not in selected_titles:
+                selected_titles.append(title)
+            elif action == 'remove' and title in selected_titles:
+                selected_titles.remove(title)
+
+            # Save the updated selection back into the database
+            selected_json = json.dumps(selected_titles)
+            c.execute("INSERT OR REPLACE INTO selected_titles (user_id, selected_titles) VALUES (?, ?)",(user_id, selected_json))
+            conn.commit()
+
+    return jsonify({"status": "success"}), 200
+
+
+@app.route('/clear-title-animation')
+def clear_title_animation():
+    session.pop('show_title_animation', None)
+    return '', 204
 
 
 @app.route('/add_xp', methods=['POST'])
@@ -316,24 +379,44 @@ def add_xp():
     conn = sqlite3.connect('database.db')
     cursor = conn.cursor()
     user_id = session['user_id']
+
+    # Fetch current XP and level
     cursor.execute("SELECT xp, level FROM progress WHERE user_id = ? AND skill = ?", (user_id, skill))
     row = cursor.fetchone()
 
     if row:
         new_xp = row[0] + xp_to_add
-        cursor.execute("UPDATE progress SET xp = ? WHERE skill = ? AND  user_id = ?", (new_xp, skill, user_id))
+        cursor.execute("UPDATE progress SET xp = ? WHERE skill = ? AND user_id = ?", (new_xp, skill, user_id))
         conn.commit()
-        cursor.execute("SELECT level FROM progress WHERE skill = ?", (skill,))
+
+        # Fetch level again (in case already updated elsewhere)
+        cursor.execute("SELECT level FROM progress WHERE user_id = ? AND skill = ?", (user_id, skill))
         current_level = cursor.fetchone()[0]
-        while new_xp >= current_level * 100: 
-            cursor.execute("UPDATE progress SET level = ? WHERE skill = ? AND user_id = ? ", (current_level + 1, skill, user_id))
-            new_xp -= current_level * 100
-            cursor.execute("UPDATE progress SET xp = ? WHERE skill = ? AND user_id = ?", (new_xp, skill, user_id))
+        old_level = current_level
+
+        # Level-up loop
+        while new_xp >= current_level * 100:
             current_level += 1
-            old_level = current_level - 1
+            new_xp -= (current_level - 1) * 100
+            cursor.execute("UPDATE progress SET level = ?, xp = ? WHERE user_id = ? AND skill = ?",
+                           (current_level, new_xp, user_id, skill))
             conn.commit()
+
+        # ====== TITLE CHECK & SOCKET EMIT ======
+        available_titles = TITLES.get(skill, {})
+        title_triggered = False
+
+        for req_level_str, title in available_titles.items():
+            req_level = int(req_level_str)
+            if old_level < req_level <= current_level:
+                socketio.emit('show_title_animation', {'message': f'🎉 New Title Unlocked: {title} at level {req_level} 🎉'})
+                print(f"🎉 Emitting title unlock animation for {title} at level {req_level}!")
+                title_triggered = True
+                break  # Optional: only trigger one title at a time
+
         conn.close()
-        return jsonify({ "old_level" : old_level,"current_level": current_level, "skill": skill })
+        return jsonify({ "old_level": old_level, "current_level": current_level, "skill": skill })
+
     else:
         conn.close()
         return jsonify(success=False, error="Skill not found"), 404

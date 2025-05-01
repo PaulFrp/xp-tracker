@@ -1,3 +1,5 @@
+{% extends "base.html" %}
+{% block content %}
 <!-- === templates/index.html === -->
 <!DOCTYPE html>
 <html lang="en">
@@ -28,6 +30,18 @@
     
     <header>
         <h1 style="text-align: center;">Hello {{username}}</h1>
+
+        {% if selected_titles %}
+            <h3>Titles:</h3>
+            <div class="titles-container">
+            <div class="title-grid">
+                {% for title in selected_titles %}
+                    <span class="title">{{ title }}</span>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
         <section id="daily-challenges">
             <h2>📅 Daily Challenges</h2>
             <ul class="challenge-list">
@@ -144,3 +158,4 @@
     </script>
 </body>
 </html>
+{% endblock %}

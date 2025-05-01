@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}XP Tracker{% endblock %}</title>
+    <style>
+        #title-animation {
+            display: none;
+            position: fixed;
+            z-index: 9999;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.85);
+            color: #fff;
+            font-size: 3rem;
+            font-weight: bold;
+            justify-content: center;
+            align-items: center;
+            animation: fadeInOut 5s ease forwards;
+        }
+
+        @keyframes fadeInOut {
+            0%   { opacity: 0; }
+            10%  { opacity: 1; }
+            90%  { opacity: 1; }
+            100% { opacity: 0; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Title animation overlay -->
+    <div id="title-animation">🎉 New Title Unlocked! 🎉</div>
+
+    {% block content %}{% endblock %}
+
+    <!-- Include Socket.IO -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.4.1/socket.io.min.js"></script>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Connect to the WebSocket server
+        var socket = io.connect('http://' + document.domain + ':' + location.port);
+
+        // Listen for the 'show_title_animation' event
+        socket.on('show_title_animation', function(data) {
+            const anim = document.getElementById("title-animation");
+            anim.style.display = "flex";  // Show the animation
+
+            // Hide the animation after it finishes
+            setTimeout(function() {
+                anim.style.display = "none";
+            }, 5000);  // Hide after 5 seconds
+        });
+    });
+    </script>
+</body>
+</html>

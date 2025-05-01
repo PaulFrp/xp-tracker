@@ -1,3 +1,5 @@
+{% extends "base.html" %}
+{% block content %}
 <!-- === templates/index.html === -->
 <!DOCTYPE html>
 <html lang="en">
@@ -130,11 +132,33 @@
             });
 
             if (response.ok) {
-                location.reload();
+                const data = await response.json();
+                const newLevel = data.current_level;
+                const previousLevel = data.old_level;
+                if (newLevel > previousLevel) {
+                    const skillElements = document.querySelectorAll(".skill-bar .skill-name");
+
+                    skillElements.forEach(el => {
+                    if (el.textContent.includes(skill)) {
+                        const skillBar = el.closest(".skill-bar");
+                        skillBar.classList.add("level-up");
+
+                        // Remove class after animation so it can be retriggered
+                        skillBar.addEventListener("animationend", () => {
+                            skillBar.classList.remove("level-up");
+                        }, { once: true });
+                    }
+                    });
+                    setTimeout(() => location.reload(), 600);
+                }else{
+                    location.reload();
+                }
+
             } else {
                 alert("Failed to add XP");
             }
-        });
+            }
+        );
 
         document.getElementById("xp-delete-form").addEventListener("submit", async function (e) {
             e.preventDefault();
@@ -181,3 +205,4 @@
     </script>
 </body>
 </html>
+{% endblock %}

@@ -1,0 +1,164 @@
+<!-- === templates/index.html === -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>XP Red Cards</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+    <header>
+        <div style="text-align: center;">
+            <img src="../static/images/icon_red.png" alt="{{ category }} Icon" class="icon-solo">
+        </div>
+    </header>
+
+    <main>
+        <div class="category-solo">
+            {% for category in ["Red"] %}
+            <div class="card {{ category|lower }}">
+                <div class="category-header" onclick="toggleDetails('{{ category|lower }}')">
+                    <span class="arrow">▼</span>
+                    <h3>{{ category }} Category</h3>
+                </div>
+                
+                <div class="category-details" id="details-{{ category|lower }}">
+                    <p><strong>Description:</strong> {{ descriptions[category] }}</p>
+                    <p><strong>How to earn XP:</strong> {{ earning_guide[category] }}</p>
+                </div>
+            
+                <div class="xp-bar-group">
+                    {% for skill, cat, xp, level in stats %}
+                        {% if cat == category %}
+                        <div class="skill-bar">
+                            <div class="skill-info">
+                                <span class="arrow" onclick="toggleSkillDetails('{{ skill|lower|replace(' ', '-') }}')">▶</span>
+                                <span class="skill-name">{{ skill }} (Lvl {{ level }})</span>
+                            </div>
+                        
+                            <div class="xp-bar">
+                                <div class="fill" style="width: {{ (xp / (level * 100)) * 100 }}%"></div>
+                            </div>
+                            <div class="xp">{{ xp }} / {{ level * 100 }} XP</div>
+                        
+                            <div class="skill-details" id="details-{{ skill|lower|replace(' ', '-') }}">
+                                <p><strong>Description:</strong> {{ skill_descriptions[skill] }}</p>
+                                <p><strong>Earn XP by:</strong> {{ skill_guides[skill] }}</p>
+                            </div>
+                        </div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        <div class="form-container">
+        <section id="add-xp">
+            <h2>➕ Add XP</h2>
+            <form id="xp-form">
+                <label for="xp-amount">XP Amount:</label>
+                <input type="number" id="xp-amount" name="xp-amount" min="1" required>
+
+                <label for="skill-select">Choose Skill:</label>
+                <select id="skill-select" name="skill-select" required>
+                    <option value="" disabled selected>Select a skill</option>
+                    {% for skill, category, xp, level in stats %}
+                        {% if category == "Red" %}
+                            <option value="{{ skill }}">{{ skill }}</option>
+                        {% endif %}
+                    {% endfor %}
+                </select>
+
+                <button type="submit">Add XP</button>
+            </form>
+        </section>
+
+        <section id="delete-xp">
+            <h2>➖ Delete XP</h2>
+            <form id="xp-delete-form">
+                <label for="xp-delete-amount">XP Amount:</label>
+                <input type="number" id="xp-delete-amount" name="xp-delete-amount" min="1" required>
+
+                <label for="skill-delete-select">Choose Skill:</label>
+                <select id="skill-delete-select" name="skill-delete-select" required>
+                    <option value="" disabled selected>Select a skill</option>
+                    {% for skill, category, xp, level in stats %}
+                        {% if category == "Red" %}
+                            <option value="{{ skill }}">{{ skill }}</option>
+                        {% endif %}
+                    {% endfor %}
+                </select>
+
+                <button type="submit-">Delete XP</button>
+            </form>
+        </section>
+        </div>
+        
+    </main>
+
+    <script>
+        document.getElementById("xp-form").addEventListener("submit", async function (e) {
+            e.preventDefault();
+            const amount = document.getElementById("xp-amount").value;
+            const skill = document.getElementById("skill-select").value;
+
+            const response = await fetch("/add_xp", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ skill: skill, xp: amount })
+            });
+
+            if (response.ok) {
+                location.reload();
+            } else {
+                alert("Failed to add XP");
+            }
+        });
+
+        document.getElementById("xp-delete-form").addEventListener("submit", async function (e) {
+            e.preventDefault();
+            const amount = document.getElementById("xp-delete-amount").value;
+            const skill = document.getElementById("skill-delete-select").value;
+
+            const response = await fetch("/delete_xp", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ skill: skill, xp: amount })
+            });
+
+            if (response.ok) {
+                location.reload();
+            } else {
+                alert("Failed to delete XP");
+            }
+        });
+
+       
+        function toggleDetails(category) {
+            const section = document.getElementById(`details-${category}`);
+            const arrow = section.previousElementSibling.querySelector(".arrow");
+            if (section.style.display === "block") {
+                section.style.display = "none";
+                arrow.style.transform = "rotate(0deg)";
+            } else {
+                section.style.display = "block";
+                arrow.style.transform = "rotate(90deg)";
+                }
+        }
+
+        function toggleSkillDetails(skillId) {
+            const section = document.getElementById(`details-${skillId}`);
+            const arrow = section.previousElementSibling.querySelector(".arrow");
+            const isVisible = section.style.display === "block";
+            section.style.display = isVisible ? "none" : "block";
+            arrow.textContent = isVisible ? "▶" : "▼";
+        }
+
+
+    </script>
+</body>
+</html>

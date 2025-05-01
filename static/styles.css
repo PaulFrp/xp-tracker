@@ -5,7 +5,7 @@
     justify-content: center;
     align-items: center;
     max-width: 800px;
-    margin: 40px auto;
+    margin: 40px auto; 
 }
 
 .card {
@@ -21,19 +21,51 @@
     margin-bottom: 10px;
 }
 
+.xp-bar-group{
+    color: black;
+    text-decoration: none;
+}
+
+
 .skill-bar {
-    margin-top: 10px;
-    font-size: 0.9em;
-    text-align: left;
+    text-decoration: none;
+    margin-bottom: 1em;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    background-color: #fdfdfd;
+    position: relative;
+}
+
+.skill-info {
+    display: flex;
+    align-items: center;
+    margin-bottom: 5px;
+}
+
+.skill-info .arrow {
+    font-size: 1rem;
+    margin-right: 8px;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+}
+
+.skill-name {
+    font-weight: bold;
 }
 
 .xp-bar {
+    height: 10px;
     background-color: #ddd;
-    border-radius: 10px;
-    height: 12px;
-    width: 100%;
+    border-radius: 5px;
     overflow: hidden;
-    margin-top: 4px;
+    margin-bottom: 4px;
+}
+
+.xp-bar .fill {
+    height: 100%;
+    background-color: #e74c3c;
+    transition: width 0.3s ease;
 }
 
 .fill {
@@ -46,3 +78,182 @@
 .card.blue .fill { background-color: royalblue; }
 .card.green .fill { background-color: seagreen; }
 .card.gold .fill { background-color: goldenrod; }
+
+.category-solo{
+    justify-content: center;
+    align-items: center;
+    max-width: 100%;
+    margin: 40px auto; 
+}
+
+.icon-solo{
+    width: 10%; 
+    margin-top: 1%; 
+    margin-bottom: 2%;
+}
+
+
+.category-header {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    background-color: #eee;
+    padding: 10px;
+    border-radius: 6px;
+}
+
+.category-header .arrow {
+    font-size: 1.2rem;
+    margin-right: 10px;
+    transition: transform 0.3s ease;
+}
+
+.category-details {
+    display: none;
+    padding: 10px;
+    background: #fafafa;
+    border-left: 3px solid #ccc;
+    margin-bottom: 10px;
+    border-radius: 6px;
+}
+
+
+.skill-details {
+    display: none;
+    font-size: 0.9em;
+    margin-top: 8px;
+    background-color: #f6f6f6;
+    padding: 8px;
+    border-left: 3px solid #e74c3c;
+    border-radius: 4px;
+}
+
+
+/* Design of the add and delete xp buttons*/
+
+.form-container {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 30px;
+    flex-wrap: wrap; /* Makes it responsive on small screens */
+}
+
+section#add-xp,
+section#delete-xp {
+    flex: 1;
+    max-width: 450px;
+    background: #f8f8f8;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    margin: 30px auto;
+    max-width: 500px;
+}
+
+section h2 {
+    margin-bottom: 15px;
+    color: #333;
+    font-size: 1.4rem;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+form label {
+    font-weight: bold;
+    color: #444;
+}
+
+form input[type="number"],
+form select {
+    padding: 10px;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    background: #fff;
+    transition: border-color 0.3s ease;
+}
+
+form input[type="number"]:focus,
+form select:focus {
+    border-color: #007bff;
+    outline: none;
+}
+
+form button {
+    background-color: #007bff;
+    color: white;
+    padding: 12px;
+    border: none;
+    border-radius: 6px;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+form button:hover {
+    background-color: #0056b3;
+}
+
+/* Daily challenge */
+#daily-challenges {
+    background: #fdfdfd;
+    border-radius: 16px;
+    padding: 25px;
+    margin: 20px auto;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+    max-width: 600px;
+    text-align: left;
+}
+
+#daily-challenges h2 {
+    margin-bottom: 20px;
+    font-size: 1.5rem;
+    color: #333;
+    border-bottom: 2px solid #ddd;
+    padding-bottom: 10px;
+}
+
+.challenge-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.challenge-item {
+    font-size: 1.1rem;
+    font-weight: 500;
+    color: #333;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.challenge-item progress {
+    width: 100%;
+    height: 20px;
+    appearance: none;
+}
+
+.challenge-item progress::-webkit-progress-bar {
+    background-color: #eee;
+    border-radius: 10px;
+}
+
+.challenge-item progress::-webkit-progress-value {
+    background-color: #4caf50;
+    border-radius: 10px;
+}
+
+.challenge-item progress::-moz-progress-bar {
+    background-color: #4caf50;
+    border-radius: 10px;
+}

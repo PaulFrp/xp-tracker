@@ -8,55 +8,34 @@
 </head>
 <body>
     <header>
-        <h1>🧭 XP Tracker</h1>
         <section id="daily-challenges">
             <h2>📅 Daily Challenges</h2>
-            <ul>
-                <li>🏋️‍♂️ 100 Gym exercises <progress value="0" max="100"></progress></li>
-                <li>🏃‍♂️ 2.5 km Running <progress value="0" max="2.5"></progress></li>
-                <li>📖 Read 50 Pages <progress value="0" max="50"></progress></li>
-                <li>💻 30min Deep Work <progress value="0" max="30"></progress></li>
+            <ul class="challenge-list">
+            {% for challenge, completed in daily_challenges %}
+            <li class="challenge-item">
+                <div class="challenge-header">
+                {{ challenge }}
+                <button class="complete-btn-{{ challenge|replace(' ', '') }}" 
+                    onclick="markComplete(this)" 
+                    style="background-color: {{ 'white' if completed == 1 else 'initial' }};"
+                    {% if completed == 1 %}disabled{% endif %}>
+                    {{ "✅ Done" if completed == 1 else "✔ Completed" }}
+                </button>
+                </div>
+                <progress value="{{ 100 if completed == 1 else 0 }}" max="100" 
+                      class="{{ 'completed' if completed == 1 else '' }}"></progress>
+            </li>
+            {% endfor %}
             </ul>
         </section>
-
-        <section id="add-xp">
-            <h2>➕ Add XP</h2>
-            <form id="xp-form">
-                <label for="xp-amount">XP Amount:</label>
-                <input type="number" id="xp-amount" name="xp-amount" min="1" required>
-
-                <label for="skill-select">Choose Skill:</label>
-                <select id="skill-select" name="skill-select" required>
-                    {% for skill, category, xp, level in stats %}
-                        <option value="{{ skill }}">{{ skill }}</option>
-                    {% endfor %}
-                </select>
-
-                <button type="submit">Add XP</button>
-            </form>
-        </section>
-
-        <section id="delete-xp">
-            <h2>➕ Delete XP</h2>
-            <form id="xp-delete-form">
-                <label for="xp-delete-amount">XP Amount:</label>
-                <input type="number" id="xp-delete-amount" name="xp-delete-amount" min="1" required>
-
-                <label for="skill-delete-select">Choose Skill:</label>
-                <select id="skill-delete-select" name="skill-delete-select" required>
-                    {% for skill, category, xp, level in stats %}
-                        <option value="{{ skill }}">{{ skill }}</option>
-                    {% endfor %}
-                </select>
-
-                <button type="submit-">Delete XP</button>
-            </form>
-        </section>
+        
     </header>
+    
 
     <main>
         <div class="category-grid">
             {% for category in ["Red", "Blue", "Green", "Gold"] %}
+                <a href= "/card_{{category|lower}}" style = "text-decoration: none;">
                 <div class="card {{ category|lower }}">
                     <img src="../static/images/icon_{{category|lower }}.png" alt="{{ category }} Icon" class="category-icon">
                     <div class="xp-bar-group">
@@ -72,6 +51,7 @@
                         {% endfor %}
                     </div>
                 </div>
+                </a>
             {% endfor %}
         </div>
         
@@ -117,6 +97,30 @@
                 alert("Failed to delete XP");
             }
         });
+
+
+        function markComplete(button) {
+            const challengeType = button.className.split('-')[2]; 
+            
+            fetch("/daily_challenges", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ challenge: challengeType })
+            })
+            .then(response => {
+            if (response.ok) {
+                location.reload();
+            } else {
+                alert("Failed to mark challenge as complete");
+            }
+            })
+            .catch(error => {
+            console.error("Error:", error);
+            alert("An error occurred while marking the challenge as complete");
+            });
+        }
     </script>
 </body>
 </html>

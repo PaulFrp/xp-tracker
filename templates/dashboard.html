@@ -100,7 +100,7 @@
         <div class="category-grid">
             {% for category in ["Red", "Blue", "Green", "Gold"] %}
                 <a href= "/card_{{category|lower}}" style = "text-decoration: none;">
-                <div class="card {{ category|lower }}">
+                <div class="card-main {{ category|lower }}">
                     <img src="../static/images/icons/icon_{{category|lower }}.png" alt="{{ category }} Icon" class="category-icon">
                     <div class="xp-bar-group">
                         {% for skill, cat, xp, level in stats %}

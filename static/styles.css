@@ -18,7 +18,15 @@
     text-align: center;
 }
 
-.card:hover {
+.card-main {
+    background-color: #f2f2f2;
+    border-radius: 16px;
+    padding: 16px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+.card-main:hover {
     transform: scale(1.05);
     background-color: #fafafa;
 }
@@ -87,6 +95,11 @@
 .card.blue .fill { background-color: royalblue; }
 .card.green .fill { background-color: seagreen; }
 .card.gold .fill { background-color: goldenrod; }
+
+.card-main.red .fill { background-color: crimson; }
+.card-main.blue .fill { background-color: royalblue; }
+.card-main.green .fill { background-color: seagreen; }
+.card-main.gold .fill { background-color: goldenrod; }
 
 .category-solo{
     justify-content: center;

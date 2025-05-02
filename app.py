@@ -10,6 +10,9 @@ import json
 with open(os.path.join(os.path.dirname(__file__), 'titles.json')) as f:
     TITLES = json.load(f)
 
+with open(os.path.join(os.path.dirname(__file__), 'badges.json')) as f:
+    BADGES = json.load(f)
+
 # Define shared data outside the functions
 descriptions = {
     "Red": "Physical skills like strength and endurance.",
@@ -222,7 +225,23 @@ def dashboard():
         row = c.fetchone()
         selected_titles = json.loads(row[0]) if row else []
 
-    return render_template("dashboard.html", stats=stats, daily_challenges=daily_challenges, username=username, selected_titles=selected_titles)
+    title_info = {}
+
+    for skill, titles in TITLES.items():
+        for level, title in titles.items():
+            title_info[title] = {
+                "skill": skill,
+                "level": int(level)
+            }
+
+    skill_to_category= {
+        "Strength": "Red", "Endurance": "Red", "Mobility": "Red", "Speed": "Red",
+        "Intelligence": "Blue", "Concentration": "Blue", "Logic": "Blue", "Creativity": "Blue",
+        "Dexterity": "Green", "Vitality": "Green", "Recovery": "Green", "Affection": "Green",
+        "Discipline": "Gold", "Planning": "Gold", "Reflection": "Gold", "Good deeds": "Gold"
+    }
+
+    return render_template("dashboard.html", stats=stats, daily_challenges=daily_challenges, username=username, selected_titles=selected_titles, title_info=title_info, skill_to_category=skill_to_category)
 
 
 @app.route("/card_red")
@@ -368,6 +387,43 @@ def update_selected_titles():
 def clear_title_animation():
     session.pop('show_title_animation', None)
     return '', 204
+
+@app.route("/badges")
+def badges():
+    user_id = session.get('user_id')
+    if not user_id:
+        return redirect(url_for('login'))
+
+    with sqlite3.connect("database.db") as conn:
+        c = conn.cursor()
+        c.execute("SELECT skill, level FROM progress WHERE user_id = ?", (user_id,))
+        stats = c.fetchall()
+
+    unlocked_badges = []
+
+    for badge in BADGES.get("badges", []):
+        unlock_condition = badge.get("unlock_condition", {})
+        skill = unlock_condition.get("skill")
+        required_level = unlock_condition.get("level")
+
+        # Check if the user meets the unlock condition
+        for skill_name, level in stats:
+            if skill_name == skill and level >= required_level:
+                unlocked_badges.append({
+                    "name": badge.get("name"),
+                    "description": badge.get("description"),
+                    "image": badge.get("image"),
+                    "category": unlock_condition.get("skill"),
+                })
+
+    skill_to_category= {
+        "Strength": "Red", "Endurance": "Red", "Mobility": "Red", "Speed": "Red",
+        "Intelligence": "Blue", "Concentration": "Blue", "Logic": "Blue", "Creativity": "Blue",
+        "Dexterity": "Green", "Vitality": "Green", "Recovery": "Green", "Affection": "Green",
+        "Discipline": "Gold", "Planning": "Gold", "Reflection": "Gold", "Good deeds": "Gold"
+    }
+
+    return render_template("badges.html", unlocked_badges=unlocked_badges, skill_to_category=skill_to_category, user_id=user_id)
 
 
 @app.route('/add_xp', methods=['POST'])

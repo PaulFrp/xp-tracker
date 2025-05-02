@@ -1,4 +1,5 @@
 {
+    
     "Strength": {
         "10": "Gym Goer",
         "20": "Power Builder",
@@ -8,11 +9,31 @@
     },
     "Endurance": {
         "10": "Jogger",
-        "20": "Road Runner",
+        "20": "Pace Breaker",
         "30": "Cardio Veteran",
         "40": "Endurance Machine",
         "50": "Marathon Soul"
     },
+
+    "Mobility": {
+        "10": "Swift Mover",
+        "20": "Agile Traveler",
+        "30": "Graceful Strider",
+        "40": "Movement Maestro",
+        "50": "Master of Motion"
+    },
+
+    "Speed": {
+        "10": "Quick Starter",
+        "20": "Swift Sprinter",
+        "30": "Blazing Fast",
+        "40": "Speed Demon",
+        "50": "Lightning Reflexes"
+    },  
+    
+    
+
+
     "Intelligence": {
         "10": "Bookworm",
         "20": "Knowledge Seeker",
@@ -37,10 +58,14 @@
     "Creativity": {
         "10": "Creative Spark",
         "20": "Idea Alchemist",
-        "30": "Artisan",
+        "30": "Artisan of Thought",
         "40": "Visionary",
         "50": "Creative Sage"
     },
+
+
+
+
     "Dexterity": {
         "10": "Steady Hand",
         "20": "Quick Fingers",
@@ -50,46 +75,12 @@
     },
     "Vitality": {
         "10": "Healthy Starter",
-        "20": "Wellness Walker",
+        "20": "Wellness Hero",
         "30": "Vital Force",
         "40": "Balanced Guardian",
         "50": "Life Engine"
     },
-    "Discipline": {
-        "10": "Routine Maker",
-        "20": "Consistency Champ",
-        "30": "Willpower Adept",
-        "40": "Habitsmith",
-        "50": "Master of Discipline"
-    },
-    "Mobility": {
-        "10": "Swift Mover",
-        "20": "Agile Traveler",
-        "30": "Nimble Pathfinder",
-        "40": "Movement Maestro",
-        "50": "Master of Motion"
-    },
-    "Speed": {
-        "10": "Quick Starter",
-        "20": "Swift Sprinter",
-        "30": "Blazing Fast",
-        "40": "Speed Demon",
-        "50": "Lightning Reflexes"
-    },
-    "Planning": {
-        "10": "Strategic Thinker",
-        "20": "Tactical Planner",
-        "30": "Master Organizer",
-        "40": "Visionary Planner",
-        "50": "Grand Strategist"
-    },
-    "Reflection": {
-        "10": "Introspective Beginner",
-        "20": "Thoughtful Observer",
-        "30": "Deep Thinker",
-        "40": "Contemplative Sage",
-        "50": "Wise Philosopher"
-    },
+
     "Recovery": {
         "10": "Quick Healer",
         "20": "Resilient Bouncer",
@@ -104,6 +95,33 @@
         "40": "Heartfelt Giver",
         "50": "Affectionate Leader"
     },
+
+
+
+
+    "Discipline": {
+        "10": "Routine Maker",
+        "20": "Consistency Champ",
+        "30": "Willpower Adept",
+        "40": "Habitsmith",
+        "50": "Master of Discipline"
+    },
+
+    "Planning": {
+        "10": "Strategic Thinker",
+        "20": "Tactical Planner",
+        "30": "Master Organizer",
+        "40": "Visionary Planner",
+        "50": "Grand Strategist"
+    },
+    "Reflection": {
+        "10": "Introspective Beginner",
+        "20": "Thoughtful Observer",
+        "30": "Deep Thinker",
+        "40": "Contemplative Sage",
+        "50": "Wise Philosopher"
+    },
+
     "Good deeds": {
         "10": "Good Samaritan",
         "20": "Generosity Advocate",

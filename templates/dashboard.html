@@ -18,6 +18,7 @@
                 </a>
             {% endfor %}
             <a  href=  "{{ url_for('titles')}}" style="text-decoration: none; font-weight: bold; color: #333"> Titles</a>
+            <a  href=  "{{ url_for('badges')}}" style="text-decoration: none; font-weight: bold; color: #333"> Badges</a>
         </div>
         <div>
             <form method="POST" action="{{ url_for('logout') }}">
@@ -32,15 +33,21 @@
         <h1 style="text-align: center;">Hello {{username}}</h1>
 
         {% if selected_titles %}
-            <h3>Titles:</h3>
-            <div class="titles-container">
-            <div class="title-grid">
-                {% for title in selected_titles %}
-                    <span class="title">{{ title }}</span>
-                {% endfor %}
+        <div style="text-align: center;" class="titles-container">
+            <div class="skill-box">
+                <div class="title-grid" style="display: inline-block; text-align: center;">
+                    {% for title in selected_titles %}
+                        {% set info = title_info[title] %}
+                        {% set category = skill_to_category[info["skill"]] %}
+                        <div class="title-card border-{{ category|lower }}" style="display: inline-block; margin: 10px;">
+                            <span class="level">Lvl {{ info.level }}</span>
+                            <span class="title">{{ title }}</span>
+                        </div>
+                    {% endfor %}
+                </div>
             </div>
         </div>
-        {% endif %}
+    {% endif %}
 
         <section id="daily-challenges">
             <h2>📅 Daily Challenges</h2>
@@ -48,7 +55,17 @@
             {% for challenge, completed in daily_challenges %}
             <li class="challenge-item">
                 <div class="challenge-header">
-                {{ challenge }}
+                {% if challenge == "Gym" %}
+                    💪 100 Gym exercise
+                {% elif challenge == "Running" %}
+                    🏃 Run 2.5km 
+                {% elif challenge == "Reading" %}
+                    📖 Read 50 pages 
+                {% elif challenge == "Work" %}
+                    💼 Work 30min 
+                {% else %}
+                    {{ challenge }}
+                {% endif %}
                 <button class="complete-btn-{{ challenge|replace(' ', '') }}" 
                     onclick="markComplete(this)" 
                     style="background-color: {{ 'white' if completed == 1 else 'initial' }};"

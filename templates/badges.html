@@ -17,6 +17,7 @@
                 </a>
             {% endfor %}
             <a  href=  "{{ url_for('titles')}}" style="text-decoration: none; font-weight: bold; color: #333"> Titles</a>
+            <a  href=  "{{ url_for('badges')}}" style="text-decoration: none; font-weight: bold; color: #333"> Badges</a>
         </div>
         <div>
             <form method="POST" action="{{ url_for('logout') }}">
@@ -27,23 +28,37 @@
         </div>
     </nav>
 
-    <h1>🏅 Titles Unlocked</h1>
+    <h1>🏅 Badges Unlocked</h1>
     
-    {% if unlocked_titles %}
-    <div class="titles-container">
-        {% for skill, titles in unlocked_titles.items() %}
-            <div class="skill-section">
-                <h2>{{ skill }}</h2>
-                <ul>
-                    {% for level, title in titles %}
-                        <li>Level {{ level }} – <strong>{{ title }}</strong></li>
+    {% if unlocked_badges %}
+    <div class="badge-container">
+        {% set badges_by_category = {} %}
+        {% for badge in unlocked_badges %}
+            {% set skill = badge['category'] %}
+            {% set category = skill_to_category.get(skill, 'Unknown') %}
+            {% if category not in badges_by_category %}
+                {% set _ = badges_by_category.update({category: []}) %}
+            {% endif %}
+            {% set _ = badges_by_category[category].append(badge) %}
+        {% endfor %}
+
+        {% for category, badges in badges_by_category.items() %}
+            <div class="badge-skill-box">
+                <h2 class="category-title border-{{ category|lower }}">{{ category }}</h2>
+                <div class="badge-grid">
+                    {% for badge in badges %}
+                        <div class="badgecard badge-border-{{ category|lower }}">
+                            <img src="../{{ badge['image'] }}" alt="{{ badge['name'] }}" class="badge-image">
+                            <span class="badge-title">{{ badge['name'] }}</span>
+                            <p class="badge-description">{{ badge['description'] }}</p>
+                        </div>
                     {% endfor %}
-                </ul>
+                </div>
             </div>
         {% endfor %}
     </div>
     {% else %}
-    <p>You haven't unlocked any titles yet. Keep leveling up!</p>
+    <p>You haven't unlocked any badges yet. Keep leveling up!</p>
     {% endif %}
 </body>
 {% endblock %}

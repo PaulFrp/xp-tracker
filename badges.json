@@ -1,208 +1,724 @@
 {
-    "badges": [
-      {
-        "name": "Strength Champion",
-        "description": "Awarded for reaching level 10 in Strength",
-        "unlock_condition": {"skill": "Strength", "level": 10},
-        "image": "static/images/badges/strength_champion.png"
+  "badges": [
+    {
+      "name": "Gym Goer",
+      "description": "Awarded for reaching level 10 in Strength",
+      "unlock_condition": {
+        "skill": "Strength",
+        "level": 10
       },
-      {
-        "name": "Power Builder",
-        "description": "Awarded for reaching level 20 in Strength",
-        "unlock_condition": {"skill": "Strength", "level": 20},
-        "image": "static/images/badges/power_builder.png"
+      "image": "static/images/badges/red/gym_goer.png"
+    },
+    {
+      "name": "Power Builder",
+      "description": "Awarded for reaching level 20 in Strength",
+      "unlock_condition": {
+        "skill": "Strength",
+        "level": 20
       },
-      {
-        "name": "Iron Core",
-        "description": "Awarded for reaching level 30 in Strength",
-        "unlock_condition": {"skill": "Strength", "level": 30},
-        "image": "static/images/badges/iron_core.png"
+      "image": "static/images/badges/red/power_builder.png"
+    },
+    {
+      "name": "Iron Core",
+      "description": "Awarded for reaching level 30 in Strength",
+      "unlock_condition": {
+        "skill": "Strength",
+        "level": 30
       },
-      {
-        "name": "Titan of Strength",
-        "description": "Awarded for reaching level 40 in Strength",
-        "unlock_condition": {"skill": "Strength", "level": 40},
-        "image": "static/images/badges/titan_of_strength.png"
+      "image": "static/images/badges/red/iron_core.png"
+    },
+    {
+      "name": "Titan of Strength",
+      "description": "Awarded for reaching level 40 in Strength",
+      "unlock_condition": {
+        "skill": "Strength",
+        "level": 40
       },
-      {
-        "name": "Atlas Incarnate",
-        "description": "Awarded for reaching level 50 in Strength",
-        "unlock_condition": {"skill": "Strength", "level": 50},
-        "image": "static/images/badges/atlas_incarnate.png"
+      "image": "static/images/badges/red/titan_of_strength.png"
+    },
+    {
+      "name": "Atlas Incarnate",
+      "description": "Awarded for reaching level 50 in Strength",
+      "unlock_condition": {
+        "skill": "Strength",
+        "level": 50
       },
-      {
-        "name": "Endurance Pro",
-        "description": "Awarded for reaching level 10 in Endurance",
-        "unlock_condition": {"skill": "Endurance", "level": 10},
-        "image": "static/images/badges/endurance_pro.png"
+      "image": "static/images/badges/red/atlas_incarnate.png"
+    },
+    {
+      "name": "Jogger",
+      "description": "Awarded for reaching level 10 in Endurance",
+      "unlock_condition": {
+        "skill": "Endurance",
+        "level": 10
       },
-      {
-        "name": "Cardio Veteran",
-        "description": "Awarded for reaching level 20 in Endurance",
-        "unlock_condition": {"skill": "Endurance", "level": 20},
-        "image": "static/images/badges/cardio_veteran.png"
+      "image": "static/images/badges/red/jogger.png"
+    },
+    {
+      "name": "Pace Breaker",
+      "description": "Awarded for reaching level 20 in Endurance",
+      "unlock_condition": {
+        "skill": "Endurance",
+        "level": 20
       },
-      {
-        "name": "Endurance Machine",
-        "description": "Awarded for reaching level 30 in Endurance",
-        "unlock_condition": {"skill": "Endurance", "level": 30},
-        "image": "static/images/badges/endurance_machine.png"
+      "image": "static/images/badges/red/pace_breaker.png"
+    },
+    {
+      "name": "Cardio Veteran",
+      "description": "Awarded for reaching level 30 in Endurance",
+      "unlock_condition": {
+        "skill": "Endurance",
+        "level": 30
       },
-      {
-        "name": "Marathon Runner",
-        "description": "Awarded for reaching level 40 in Endurance",
-        "unlock_condition": {"skill": "Endurance", "level": 40},
-        "image": "static/images/badges/marathon_runner.png"
+      "image": "static/images/badges/red/cardio_veteran.png"
+    },
+    {
+      "name": "Endurance Machine",
+      "description": "Awarded for reaching level 40 in Endurance",
+      "unlock_condition": {
+        "skill": "Endurance",
+        "level": 40
       },
-      {
-        "name": "Marathon Soul",
-        "description": "Awarded for reaching level 50 in Endurance",
-        "unlock_condition": {"skill": "Endurance", "level": 50},
-        "image": "static/images/badges/marathon_soul.png"
+      "image": "static/images/badges/red/endurance_machine.png"
+    },
+    {
+      "name": "Marathon Soul",
+      "description": "Awarded for reaching level 50 in Endurance",
+      "unlock_condition": {
+        "skill": "Endurance",
+        "level": 50
       },
-      {
-        "name": "Mental Climber",
-        "description": "Awarded for reaching level 10 in Intelligence",
-        "unlock_condition": {"skill": "Intelligence", "level": 10},
-        "image": "static/images/badges/mental_climber.png"
+      "image": "static/images/badges/red/marathon_soul.png"
+    },
+    {
+      "name": "Swift Mover",
+      "description": "Awarded for reaching level 10 in Mobility",
+      "unlock_condition": {
+        "skill": "Mobility",
+        "level": 10
       },
-      {
-        "name": "Knowledge Seeker",
-        "description": "Awarded for reaching level 20 in Intelligence",
-        "unlock_condition": {"skill": "Intelligence", "level": 20},
-        "image": "static/images/badges/knowledge_seeker.png"
+      "image": "static/images/badges/red/swift_mover.png"
+    },
+    {
+      "name": "Agile Traveler",
+      "description": "Awarded for reaching level 20 in Mobility",
+      "unlock_condition": {
+        "skill": "Mobility",
+        "level": 20
       },
-      {
-        "name": "Cognitive Climber",
-        "description": "Awarded for reaching level 30 in Intelligence",
-        "unlock_condition": {"skill": "Intelligence", "level": 30},
-        "image": "static/images/badges/cognitive_climber.png"
+      "image": "static/images/badges/red/agile_traveler.png"
+    },
+    {
+      "name": "Graceful Strider",
+      "description": "Awarded for reaching level 30 in Mobility",
+      "unlock_condition": {
+        "skill": "Mobility",
+        "level": 30
       },
-      {
-        "name": "Mind Scholar",
-        "description": "Awarded for reaching level 40 in Intelligence",
-        "unlock_condition": {"skill": "Intelligence", "level": 40},
-        "image": "static/images/badges/mind_scholar.png"
+      "image": "static/images/badges/red/graceful_strider.png"
+    },
+    {
+      "name": "Movement Maestro",
+      "description": "Awarded for reaching level 40 in Mobility",
+      "unlock_condition": {
+        "skill": "Mobility",
+        "level": 40
       },
-      {
-        "name": "Mastermind",
-        "description": "Awarded for reaching level 50 in Intelligence",
-        "unlock_condition": {"skill": "Intelligence", "level": 50},
-        "image": "static/images/badges/mastermind.png"
+      "image": "static/images/badges/red/movement_maestro.png"
+    },
+    {
+      "name": "Master of Motion",
+      "description": "Awarded for reaching level 50 in Mobility",
+      "unlock_condition": {
+        "skill": "Mobility",
+        "level": 50
       },
-      {
-        "name": "Focus Adept",
-        "description": "Awarded for reaching level 10 in Concentration",
-        "unlock_condition": {"skill": "Concentration", "level": 10},
-        "image": "static/images/badges/focus_adept.png"
+      "image": "static/images/badges/red/master_of_motion.png"
+    },
+    {
+      "name": "Quick Starter",
+      "description": "Awarded for reaching level 10 in Speed",
+      "unlock_condition": {
+        "skill": "Speed",
+        "level": 10
       },
-      {
-        "name": "Zen Worker",
-        "description": "Awarded for reaching level 20 in Concentration",
-        "unlock_condition": {"skill": "Concentration", "level": 20},
-        "image": "static/images/badges/zen_worker.png"
+      "image": "static/images/badges/red/quick_starter.png"
+    },
+    {
+      "name": "Swift Sprinter",
+      "description": "Awarded for reaching level 20 in Speed",
+      "unlock_condition": {
+        "skill": "Speed",
+        "level": 20
       },
-      {
-        "name": "Mental Fortress",
-        "description": "Awarded for reaching level 30 in Concentration",
-        "unlock_condition": {"skill": "Concentration", "level": 30},
-        "image": "static/images/badges/mental_fortress.png"
+      "image": "static/images/badges/red/swift_sprinter.png"
+    },
+    {
+      "name": "Blazing Fast",
+      "description": "Awarded for reaching level 30 in Speed",
+      "unlock_condition": {
+        "skill": "Speed",
+        "level": 30
       },
-      {
-        "name": "Mental Clarity",
-        "description": "Awarded for reaching level 40 in Concentration",
-        "unlock_condition": {"skill": "Concentration", "level": 40},
-        "image": "static/images/badges/mental_clarity.png"
+      "image": "static/images/badges/red/blazing_fast.png"
+    },
+    {
+      "name": "Speed Demon",
+      "description": "Awarded for reaching level 40 in Speed",
+      "unlock_condition": {
+        "skill": "Speed",
+        "level": 40
       },
-      {
-        "name": "Zen Master",
-        "description": "Awarded for reaching level 50 in Concentration",
-        "unlock_condition": {"skill": "Concentration", "level": 50},
-        "image": "static/images/badges/zen_master.png"
+      "image": "static/images/badges/red/speed_demon.png"
+    },
+    {
+      "name": "Lightning Reflexes",
+      "description": "Awarded for reaching level 50 in Speed",
+      "unlock_condition": {
+        "skill": "Speed",
+        "level": 50
       },
-      {
-        "name": "Puzzle Solver",
-        "description": "Awarded for reaching level 10 in Logic",
-        "unlock_condition": {"skill": "Logic", "level": 10},
-        "image": "static/images/badges/puzzle_solver.png"
+      "image": "static/images/badges/red/lightning_reflexes.png"
+    },
+    {
+      "name": "Bookworm",
+      "description": "Awarded for reaching level 10 in Intelligence",
+      "unlock_condition": {
+        "skill": "Intelligence",
+        "level": 10
       },
-      {
-        "name": "Logical Thinker",
-        "description": "Awarded for reaching level 20 in Logic",
-        "unlock_condition": {"skill": "Logic", "level": 20},
-        "image": "static/images/badges/logical_thinker.png"
+      "image": "static/images/badges/blue/bookworm.png"
+    },
+    {
+      "name": "Knowledge Seeker",
+      "description": "Awarded for reaching level 20 in Intelligence",
+      "unlock_condition": {
+        "skill": "Intelligence",
+        "level": 20
       },
-      {
-        "name": "Strategist",
-        "description": "Awarded for reaching level 30 in Logic",
-        "unlock_condition": {"skill": "Logic", "level": 30},
-        "image": "static/images/badges/strategist.png"
+      "image": "static/images/badges/blue/knowledge_seeker.png"
+    },
+    {
+      "name": "Cognitive Climber",
+      "description": "Awarded for reaching level 30 in Intelligence",
+      "unlock_condition": {
+        "skill": "Intelligence",
+        "level": 30
       },
-      {
-        "name": "Tactician",
-        "description": "Awarded for reaching level 40 in Logic",
-        "unlock_condition": {"skill": "Logic", "level": 40},
-        "image": "static/images/badges/tactician.png"
+      "image": "static/images/badges/blue/cognitive_climber.png"
+    },
+    {
+      "name": "Mind Scholar",
+      "description": "Awarded for reaching level 40 in Intelligence",
+      "unlock_condition": {
+        "skill": "Intelligence",
+        "level": 40
       },
-      {
-        "name": "Grand Architect",
-        "description": "Awarded for reaching level 50 in Logic",
-        "unlock_condition": {"skill": "Logic", "level": 50},
-        "image": "static/images/badges/grand_architect.png"
+      "image": "static/images/badges/blue/mind_scholar.png"
+    },
+    {
+      "name": "Mastermind",
+      "description": "Awarded for reaching level 50 in Intelligence",
+      "unlock_condition": {
+        "skill": "Intelligence",
+        "level": 50
       },
-      {
-        "name": "Creative Spark",
-        "description": "Awarded for reaching level 10 in Creativity",
-        "unlock_condition": {"skill": "Creativity", "level": 10},
-        "image": "static/images/badges/creative_spark.png"
+      "image": "static/images/badges/blue/mastermind.png"
+    },
+    {
+      "name": "Iron Mind",
+      "description": "Awarded for reaching level 10 in Concentration",
+      "unlock_condition": {
+        "skill": "Concentration",
+        "level": 10
       },
-      {
-        "name": "Idea Alchemist",
-        "description": "Awarded for reaching level 20 in Creativity",
-        "unlock_condition": {"skill": "Creativity", "level": 20},
-        "image": "static/images/badges/idea_alchemist.png"
+      "image": "static/images/badges/blue/iron_mind.png"
+    },
+    {
+      "name": "Focus Adept",
+      "description": "Awarded for reaching level 20 in Concentration",
+      "unlock_condition": {
+        "skill": "Concentration",
+        "level": 20
       },
-      {
-        "name": "Artisan",
-        "description": "Awarded for reaching level 30 in Creativity",
-        "unlock_condition": {"skill": "Creativity", "level": 30},
-        "image": "static/images/badges/artisan.png"
+      "image": "static/images/badges/blue/focus_adept.png"
+    },
+    {
+      "name": "Zen Worker",
+      "description": "Awarded for reaching level 30 in Concentration",
+      "unlock_condition": {
+        "skill": "Concentration",
+        "level": 30
       },
-      {
-        "name": "Visionary",
-        "description": "Awarded for reaching level 40 in Creativity",
-        "unlock_condition": {"skill": "Creativity", "level": 40},
-        "image": "static/images/badges/visionary.png"
+      "image": "static/images/badges/blue/zen_worker.png"
+    },
+    {
+      "name": "Flow Architect",
+      "description": "Awarded for reaching level 40 in Concentration",
+      "unlock_condition": {
+        "skill": "Concentration",
+        "level": 40
       },
-      {
-        "name": "Creative Sage",
-        "description": "Awarded for reaching level 50 in Creativity",
-        "unlock_condition": {"skill": "Creativity", "level": 50},
-        "image": "static/images/badges/creative_sage.png"
+      "image": "static/images/badges/blue/flow_architect.png"
+    },
+    {
+      "name": "Mental Fortress",
+      "description": "Awarded for reaching level 50 in Concentration",
+      "unlock_condition": {
+        "skill": "Concentration",
+        "level": 50
       },
-      {
-        "name": "Precision Master",
-        "description": "Awarded for reaching level 10 in Dexterity",
-        "unlock_condition": {"skill": "Dexterity", "level": 10},
-        "image": "static/images/badges/precision_master.png"
+      "image": "static/images/badges/blue/mental_fortress.png"
+    },
+    {
+      "name": "Puzzle Solver",
+      "description": "Awarded for reaching level 10 in Logic",
+      "unlock_condition": {
+        "skill": "Logic",
+        "level": 10
       },
-      {
-        "name": "Quick Fingers",
-        "description": "Awarded for reaching level 20 in Dexterity",
-        "unlock_condition": {"skill": "Dexterity", "level": 20},
-        "image": "static/images/badges/quick_fingers.png"
+      "image": "static/images/badges/blue/puzzle_solver.png"
+    },
+    {
+      "name": "Logical Thinker",
+      "description": "Awarded for reaching level 20 in Logic",
+      "unlock_condition": {
+        "skill": "Logic",
+        "level": 20
       },
-      {
-        "name": "Motion Artist",
-        "description": "Awarded for reaching level 30 in Dexterity",
-        "unlock_condition": {"skill": "Dexterity", "level": 30},
-        "image": "static/images/badges/motion_artist.png"
+      "image": "static/images/badges/blue/logical_thinker.png"
+    },
+    {
+      "name": "Strategist",
+      "description": "Awarded for reaching level 30 in Logic",
+      "unlock_condition": {
+        "skill": "Logic",
+        "level": 30
       },
-      {
-        "name": "Kinetic Prodigy",
-        "description": "Awarded for reaching level 40 in Dexterity",
-        "unlock_condition": {"skill": "Dexterity", "level": 40},
-        "image": "static/images/badges/kinetic_prodigy.png"
-      }
-    ]
+      "image": "static/images/badges/blue/strategist.png"
+    },
+    {
+      "name": "Tactician",
+      "description": "Awarded for reaching level 40 in Logic",
+      "unlock_condition": {
+        "skill": "Logic",
+        "level": 40
+      },
+      "image": "static/images/badges/blue/tactician.png"
+    },
+    {
+      "name": "Grand Architect",
+      "description": "Awarded for reaching level 50 in Logic",
+      "unlock_condition": {
+        "skill": "Logic",
+        "level": 50
+      },
+      "image": "static/images/badges/blue/grand_architect.png"
+    },
+    {
+      "name": "Creative Spark",
+      "description": "Awarded for reaching level 10 in Creativity",
+      "unlock_condition": {
+        "skill": "Creativity",
+        "level": 10
+      },
+      "image": "static/images/badges/blue/creative_spark.png"
+    },
+    {
+      "name": "Idea Alchemist",
+      "description": "Awarded for reaching level 20 in Creativity",
+      "unlock_condition": {
+        "skill": "Creativity",
+        "level": 20
+      },
+      "image": "static/images/badges/blue/idea_alchemist.png"
+    },
+    {
+      "name": "Artisan of Thought",
+      "description": "Awarded for reaching level 30 in Creativity",
+      "unlock_condition": {
+        "skill": "Creativity",
+        "level": 30
+      },
+      "image": "static/images/badges/blue/artisan_of_thought.png"
+    },
+    {
+      "name": "Visionary",
+      "description": "Awarded for reaching level 40 in Creativity",
+      "unlock_condition": {
+        "skill": "Creativity",
+        "level": 40
+      },
+      "image": "static/images/badges/blue/visionary.png"
+    },
+    {
+      "name": "Creative Sage",
+      "description": "Awarded for reaching level 50 in Creativity",
+      "unlock_condition": {
+        "skill": "Creativity",
+        "level": 50
+      },
+      "image": "static/images/badges/blue/creative_sage.png"
+    },
+    {
+      "name": "Steady Hand",
+      "description": "Awarded for reaching level 10 in Dexterity",
+      "unlock_condition": {
+        "skill": "Dexterity",
+        "level": 10
+      },
+      "image": "static/images/badges/green/steady_hand.png"
+    },
+    {
+      "name": "Quick Fingers",
+      "description": "Awarded for reaching level 20 in Dexterity",
+      "unlock_condition": {
+        "skill": "Dexterity",
+        "level": 20
+      },
+      "image": "static/images/badges/green/quick_fingers.png"
+    },
+    {
+      "name": "Precision Master",
+      "description": "Awarded for reaching level 30 in Dexterity",
+      "unlock_condition": {
+        "skill": "Dexterity",
+        "level": 30
+      },
+      "image": "static/images/badges/green/precision_master.png"
+    },
+    {
+      "name": "Motion Artist",
+      "description": "Awarded for reaching level 40 in Dexterity",
+      "unlock_condition": {
+        "skill": "Dexterity",
+        "level": 40
+      },
+      "image": "static/images/badges/green/motion_artist.png"
+    },
+    {
+      "name": "Kinetic Prodigy",
+      "description": "Awarded for reaching level 50 in Dexterity",
+      "unlock_condition": {
+        "skill": "Dexterity",
+        "level": 50
+      },
+      "image": "static/images/badges/green/kinetic_prodigy.png"
+    },
+    {
+      "name": "Healthy Starter",
+      "description": "Awarded for reaching level 10 in Vitality",
+      "unlock_condition": {
+        "skill": "Vitality",
+        "level": 10
+      },
+      "image": "static/images/badges/green/healthy_starter.png"
+    },
+    {
+      "name": "Wellness Hero",
+      "description": "Awarded for reaching level 20 in Vitality",
+      "unlock_condition": {
+        "skill": "Vitality",
+        "level": 20
+      },
+      "image": "static/images/badges/green/wellness_hero.png"
+    },
+    {
+      "name": "Vital Force",
+      "description": "Awarded for reaching level 30 in Vitality",
+      "unlock_condition": {
+        "skill": "Vitality",
+        "level": 30
+      },
+      "image": "static/images/badges/green/vital_force.png"
+    },
+    {
+      "name": "Balanced Guardian",
+      "description": "Awarded for reaching level 40 in Vitality",
+      "unlock_condition": {
+        "skill": "Vitality",
+        "level": 40
+      },
+      "image": "static/images/badges/green/balanced_guardian.png"
+    },
+    {
+      "name": "Life Engine",
+      "description": "Awarded for reaching level 50 in Vitality",
+      "unlock_condition": {
+        "skill": "Vitality",
+        "level": 50
+      },
+      "image": "static/images/badges/green/life_engine.png"
+    },
+    {
+      "name": "Quick Healer",
+      "description": "Awarded for reaching level 10 in Recovery",
+      "unlock_condition": {
+        "skill": "Recovery",
+        "level": 10
+      },
+      "image": "static/images/badges/green/quick_healer.png"
+    },
+    {
+      "name": "Resilient Bouncer",
+      "description": "Awarded for reaching level 20 in Recovery",
+      "unlock_condition": {
+        "skill": "Recovery",
+        "level": 20
+      },
+      "image": "static/images/badges/green/resilient_bouncer.png"
+    },
+    {
+      "name": "Healing Force",
+      "description": "Awarded for reaching level 30 in Recovery",
+      "unlock_condition": {
+        "skill": "Recovery",
+        "level": 30
+      },
+      "image": "static/images/badges/green/healing_force.png"
+    },
+    {
+      "name": "Recovery Expert",
+      "description": "Awarded for reaching level 40 in Recovery",
+      "unlock_condition": {
+        "skill": "Recovery",
+        "level": 40
+      },
+      "image": "static/images/badges/green/recovery_expert.png"
+    },
+    {
+      "name": "Regeneration Master",
+      "description": "Awarded for reaching level 50 in Recovery",
+      "unlock_condition": {
+        "skill": "Recovery",
+        "level": 50
+      },
+      "image": "static/images/badges/green/regeneration_master.png"
+    },
+    {
+      "name": "Kind Heart",
+      "description": "Awarded for reaching level 10 in Affection",
+      "unlock_condition": {
+        "skill": "Affection",
+        "level": 10
+      },
+      "image": "static/images/badges/green/kind_heart.png"
+    },
+    {
+      "name": "Friendly Soul",
+      "description": "Awarded for reaching level 20 in Affection",
+      "unlock_condition": {
+        "skill": "Affection",
+        "level": 20
+      },
+      "image": "static/images/badges/green/friendly_soul.png"
+    },
+    {
+      "name": "Loyal Companion",
+      "description": "Awarded for reaching level 30 in Affection",
+      "unlock_condition": {
+        "skill": "Affection",
+        "level": 30
+      },
+      "image": "static/images/badges/green/loyal_companion.png"
+    },
+    {
+      "name": "Heartfelt Giver",
+      "description": "Awarded for reaching level 40 in Affection",
+      "unlock_condition": {
+        "skill": "Affection",
+        "level": 40
+      },
+      "image": "static/images/badges/green/heartfelt_giver.png"
+    },
+    {
+      "name": "Affectionate Leader",
+      "description": "Awarded for reaching level 50 in Affection",
+      "unlock_condition": {
+        "skill": "Affection",
+        "level": 50
+      },
+      "image": "static/images/badges/green/affectionate_leader.png"
+    },
+    {
+      "name": "Routine Maker",
+      "description": "Awarded for reaching level 10 in Discipline",
+      "unlock_condition": {
+        "skill": "Discipline",
+        "level": 10
+      },
+      "image": "static/images/badges/gold/routine_maker.png"
+    },
+    {
+      "name": "Consistency Champ",
+      "description": "Awarded for reaching level 20 in Discipline",
+      "unlock_condition": {
+        "skill": "Discipline",
+        "level": 20
+      },
+      "image": "static/images/badges/gold/consistency_champ.png"
+    },
+    {
+      "name": "Willpower Adept",
+      "description": "Awarded for reaching level 30 in Discipline",
+      "unlock_condition": {
+        "skill": "Discipline",
+        "level": 30
+      },
+      "image": "static/images/badges/gold/willpower_adept.png"
+    },
+    {
+      "name": "Habitsmith",
+      "description": "Awarded for reaching level 40 in Discipline",
+      "unlock_condition": {
+        "skill": "Discipline",
+        "level": 40
+      },
+      "image": "static/images/badges/gold/habitsmith.png"
+    },
+    {
+      "name": "Master of Discipline",
+      "description": "Awarded for reaching level 50 in Discipline",
+      "unlock_condition": {
+        "skill": "Discipline",
+        "level": 50
+      },
+      "image": "static/images/badges/gold/master_of_discipline.png"
+    },
+    {
+      "name": "Strategic Thinker",
+      "description": "Awarded for reaching level 10 in Planning",
+      "unlock_condition": {
+        "skill": "Planning",
+        "level": 10
+      },
+      "image": "static/images/badges/gold/strategic_thinker.png"
+    },
+    {
+      "name": "Tactical Planner",
+      "description": "Awarded for reaching level 20 in Planning",
+      "unlock_condition": {
+        "skill": "Planning",
+        "level": 20
+      },
+      "image": "static/images/badges/gold/tactical_planner.png"
+    },
+    {
+      "name": "Master Organizer",
+      "description": "Awarded for reaching level 30 in Planning",
+      "unlock_condition": {
+        "skill": "Planning",
+        "level": 30
+      },
+      "image": "static/images/badges/gold/master_organizer.png"
+    },
+    {
+      "name": "Visionary Planner",
+      "description": "Awarded for reaching level 40 in Planning",
+      "unlock_condition": {
+        "skill": "Planning",
+        "level": 40
+      },
+      "image": "static/images/badges/gold/visionary_planner.png"
+    },
+    {
+      "name": "Grand Strategist",
+      "description": "Awarded for reaching level 50 in Planning",
+      "unlock_condition": {
+        "skill": "Planning",
+        "level": 50
+      },
+      "image": "static/images/badges/gold/grand_strategist.png"
+    },
+    {
+      "name": "Introspective Beginner",
+      "description": "Awarded for reaching level 10 in Reflection",
+      "unlock_condition": {
+        "skill": "Reflection",
+        "level": 10
+      },
+      "image": "static/images/badges/gold/introspective_beginner.png"
+    },
+    {
+      "name": "Thoughtful Observer",
+      "description": "Awarded for reaching level 20 in Reflection",
+      "unlock_condition": {
+        "skill": "Reflection",
+        "level": 20
+      },
+      "image": "static/images/badges/gold/thoughtful_observer.png"
+    },
+    {
+      "name": "Deep Thinker",
+      "description": "Awarded for reaching level 30 in Reflection",
+      "unlock_condition": {
+        "skill": "Reflection",
+        "level": 30
+      },
+      "image": "static/images/badges/gold/deep_thinker.png"
+    },
+    {
+      "name": "Contemplative Sage",
+      "description": "Awarded for reaching level 40 in Reflection",
+      "unlock_condition": {
+        "skill": "Reflection",
+        "level": 40
+      },
+      "image": "static/images/badges/gold/contemplative_sage.png"
+    },
+    {
+      "name": "Wise Philosopher",
+      "description": "Awarded for reaching level 50 in Reflection",
+      "unlock_condition": {
+        "skill": "Reflection",
+        "level": 50
+      },
+      "image": "static/images/badges/gold/wise_philosopher.png"
+    },
+    {
+      "name": "Good Samaritan",
+      "description": "Awarded for reaching level 10 in Good deeds",
+      "unlock_condition": {
+        "skill": "Good deeds",
+        "level": 10
+      },
+      "image": "static/images/badges/gold/good_samaritan.png"
+    },
+    {
+      "name": "Generosity Advocate",
+      "description": "Awarded for reaching level 20 in Good deeds",
+      "unlock_condition": {
+        "skill": "Good deeds",
+        "level": 20
+      },
+      "image": "static/images/badges/gold/generosity_advocate.png"
+    },
+    {
+      "name": "Altruism Champion",
+      "description": "Awarded for reaching level 30 in Good deeds",
+      "unlock_condition": {
+        "skill": "Good deeds",
+        "level": 30
+      },
+      "image": "static/images/badges/gold/altruism_champion.png"
+    },
+    {
+      "name": "Compassionate Soul",
+      "description": "Awarded for reaching level 40 in Good deeds",
+      "unlock_condition": {
+        "skill": "Good deeds",
+        "level": 40
+      },
+      "image": "static/images/badges/gold/compassionate_soul.png"
+    },
+    {
+      "name": "Moral Pillar",
+      "description": "Awarded for reaching level 50 in Good deeds",
+      "unlock_condition": {
+        "skill": "Good deeds",
+        "level": 50
+      },
+      "image": "static/images/badges/gold/moral_pillar.png"
+    }
+  ]
 }

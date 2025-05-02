@@ -214,6 +214,81 @@
 }
 
 
+/* BADGES styling */
+
+.badge-container {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    margin: 2rem 0;
+}
+
+.badge-skill-box {
+    background-color: #1e1e1e;
+    padding: 1.5rem;
+    border-radius: 1rem;
+    box-shadow: 0 0 10px rgba(0,0,0,0.3);
+}
+
+.badge-category-title {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+    text-transform: uppercase;
+    font-weight: bold;
+}
+
+.badge-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1.5rem;
+}
+
+.badgecard {
+    background-color: #2a2a2a;
+    border: 2px solid transparent;
+    padding: 1rem;
+    border-radius: 1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    transition: transform 0.2s ease;
+}
+
+.badgecard:hover {
+    transform: scale(1.05);
+}
+
+.badge-image {
+    width: 64px;
+    height: 64px;
+    object-fit: contain;
+    margin-bottom: 0.5rem;
+}
+
+.badge-title {
+    font-size: 1rem;
+    font-weight: bold;
+    color: #fff;
+    margin-bottom: 0.5rem;
+}
+
+.badge-description {
+    font-size: 0.9rem;
+    color: #ccc;
+}
+
+/* Category border colors */
+.badge-border-red { border-color: #e74c3c; }
+.badge-border-blue { border-color: #3498db; }
+.badge-border-green { border-color: #2ecc71; }
+.badge-border-gold { border-color: #f1c40f; }
+.badge-border-unknown { border-color: #7f8c8d; }
+
+
+
+
+
 
 /* Category-specific borders */
 .border-red { border-color: #dc3545; color: #dc3545; }

@@ -8,6 +8,8 @@
     margin: 40px auto; 
 }
 
+
+
 .card {
     background-color: #f2f2f2;
     border-radius: 16px;
@@ -15,6 +17,12 @@
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     text-align: center;
 }
+
+.card:hover {
+    transform: scale(1.05);
+    background-color: #fafafa;
+}
+
 
 .category-icon {
     width: 80px;
@@ -25,6 +33,7 @@
     color: black;
     text-decoration: none;
 }
+
 
 
 .skill-bar {
@@ -128,41 +137,91 @@
     border-radius: 4px;
 }
 
-/* Titles styling */
+/* Titles Styling — dark mode, matching badges */
 
-.skill-box {
-    background-color: #f2f2f2;
-    padding: 16px;
-    margin-bottom: 24px;
-    border-radius: 12px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+.titles-container {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    margin: 2rem 0;
 }
 
+
 .category-title {
-    margin-bottom: 12px;
-    padding: 8px 12px;
-    font-size: 1.5em;
-    background-color: #e0e0e0;
-    border-left: 6px solid;
-    border-radius: 8px;
-    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+    text-transform: uppercase;
+    font-weight: bold;
+    color: #fff;
 }
 
 .title-grid {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 12px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1.5rem;
 }
 
 .title-card {
-    background-color: #f9f9f9;
-    padding: 10px 14px;
-    border-radius: 10px;
-    border-left: 5px solid;
-    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.15);
-    min-width: 160px;
+    background-color: #2a2a2a;
+    border: 2px solid transparent;
+    padding: 1rem;
+    border-radius: 1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    transition: transform 0.2s ease;
+    color: #fff;
+    cursor: pointer;
 }
 
+.title-card:hover {
+    transform: scale(1.05);
+    background-color: #333;
+}
+
+.title-card.selected {
+    transform: scale(1.02);
+    border-color: #f1c40f;
+    background-color: #353535;
+    box-shadow: 0 0 10px 2px rgba(241, 196, 15, 0.7);
+}
+
+.title-card.selected::after {
+    content: "✓";
+    position: absolute;
+    top: 8px;
+    right: 10px;
+    font-size: 1.2rem;
+    color: #f1c40f;
+    background-color: #1e1e1e;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+}
+
+.title-card .level {
+    font-size: 0.9rem;
+    font-weight: bold;
+    color: #ccc;
+    margin-bottom: 0.5rem;
+}
+
+.title-card .title {
+    font-size: 1rem;
+    font-weight: bold;
+    color: #fff;
+}
+
+.title-card .checkbox {
+    display: none;
+}
+
+/* Colored borders by category */
 .border-red {
     border-color: #e74c3c;
 }
@@ -176,42 +235,6 @@
     border-color: #f1c40f;
 }
 
-.level {
-    font-weight: bold;
-    display: block;
-    margin-bottom: 4px;
-}
-
-.title-card {
-    border: 2px solid #ccc;
-    padding: 10px;
-    border-radius: 8px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    width: 200px;
-    background-color: #f9f9f9;
-    transition: background-color 0.3s ease;
-}
-
-.title-card.selected {
-    background-color: #4e73df; /* Blue background when selected */
-    color: white;
-    border-color: #2e59d9;
-}
-
-.title-card .checkbox {
-    display: none;
-}
-
-.title-card.selected .checkbox {
-    display: inline-block;
-}
-
-.title-card:hover {
-    background-color: #e1e1e1;
-}
 
 
 /* BADGES styling */
@@ -253,6 +276,33 @@
     align-items: center;
     text-align: center;
     transition: transform 0.2s ease;
+}
+
+.badgecard.selected {
+    border-color: #f1c40f; /* Gold highlight for selection */
+    box-shadow: 0 0 10px 2px rgba(241, 196, 15, 0.7);
+    background-color: #353535;
+    transform: scale(1.02);
+    transition: all 0.2s ease;
+    position: relative;
+}
+
+/* Optional: add a subtle checkmark overlay */
+.badgecard.selected::after {
+    content: "✓";
+    position: absolute;
+    top: 8px;
+    right: 10px;
+    font-size: 1.2rem;
+    color: #f1c40f;
+    background-color: #1e1e1e;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
 }
 
 .badgecard:hover {
@@ -386,6 +436,10 @@ form button:hover {
     text-align: left;
 }
 
+#daily-challenges:hover {
+    transform: scale(1.05);
+}
+
 #daily-challenges h2 {
     margin-bottom: 20px;
     font-size: 1.5rem;
@@ -452,4 +506,105 @@ form button:hover {
 
 .skill-bar.level-up {
     animation: levelUpAnimation 0.5s ease-in-out;
+}
+
+
+/* Nav Bar*/
+
+.main-navbar {
+    background-color: #e4e4e8;
+    padding: 12px 24px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+    border-bottom: 1px solid #e2e2e2;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+.navbar-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1200px;
+    margin: 0 auto;
+    width: 100%;
+}
+
+.nav-links {
+    display: flex;
+    gap: 18px;
+    align-items: center;
+}
+
+.nav-links a {
+    text-decoration: none;
+    font-weight: 500;
+    color: #333;
+    padding: 6px 10px;
+    transition: color 0.2s, background-color 0.2s;
+    border-radius: 6px;
+}
+
+.nav-links a:hover {
+    background-color: #cfcfcf;
+    color: #111;
+}
+
+/* Colored category links (optional) */
+.nav-links .red { color: #e74c3c; }
+.nav-links .blue { color: #3498db; }
+.nav-links .green { color: #2ecc71; }
+.nav-links .gold { color: #f1c40f; }
+
+.logout-form button {
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    padding: 6px 14px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.2s;
+}
+
+.logout-form button:hover {
+    background-color: #c82333;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .navbar-container {
+        flex-direction: column; /* Stack the items vertically */
+        align-items: flex-start; /* Align to the left */
+    }
+
+    .nav-links {
+        flex-direction: column; /* Stack the nav items vertically */
+        gap: 12px;
+        margin-bottom: 12px; /* Space between nav and logout */
+    }
+
+    .nav-links a {
+        font-size: 1.1rem; /* Slightly larger font on small screens */
+    }
+
+    .logout-form {
+        width: 100%; /* Make the logout form take the full width */
+        text-align: center; /* Center logout button */
+    }
+
+    .logout-form button {
+        width: 100%; /* Full-width button */
+        padding: 10px 0;
+    }
+}
+
+@media (max-width: 480px) {
+    .main-navbar {
+        padding: 12px 16px; /* Less padding on smaller screens */
+    }
+
+    .nav-links a {
+        font-size: 1rem; /* Smaller font on very small screens */
+    }
 }

@@ -121,6 +121,16 @@ def init_db():
             CREATE TABLE IF NOT EXISTS selected_titles (
             user_id INTEGER PRIMARY KEY,
             selected_titles TEXT,
+            selected_badges TEXT,
+            FOREIGN KEY(user_id) REFERENCES users(id)
+            )
+        ''')
+
+        c.execute('''
+            CREATE TABLE IF NOT EXISTS selected_badges (
+            user_id INTEGER PRIMARY KEY,
+            selected_titles TEXT,
+            selected_badges TEXT,
             FOREIGN KEY(user_id) REFERENCES users(id)
             )
         ''')        
@@ -223,10 +233,18 @@ def dashboard():
         username = c.fetchone()[0]
         c.execute("SELECT selected_titles FROM selected_titles WHERE user_id = ?", (user_id,))
         row = c.fetchone()
-        selected_titles = json.loads(row[0]) if row else []
+        if row and row[0]:
+            selected_titles = json.loads(row[0])
+        else:
+            selected_titles = []
+        c.execute("SELECT selected_badges FROM selected_badges WHERE user_id = ?", (user_id,))
+        row = c.fetchone()
+        if row and row[0]:
+            selected_badges = json.loads(row[0])
+        else:
+            selected_badges = []
 
     title_info = {}
-
     for skill, titles in TITLES.items():
         for level, title in titles.items():
             title_info[title] = {
@@ -234,14 +252,28 @@ def dashboard():
                 "level": int(level)
             }
 
-    skill_to_category= {
+    badge_images = {}
+    for badge in BADGES.get("badges", []):
+        badge_images[badge["name"]] = badge["image"]
+
+    skill_to_category = {
         "Strength": "Red", "Endurance": "Red", "Mobility": "Red", "Speed": "Red",
         "Intelligence": "Blue", "Concentration": "Blue", "Logic": "Blue", "Creativity": "Blue",
         "Dexterity": "Green", "Vitality": "Green", "Recovery": "Green", "Affection": "Green",
         "Discipline": "Gold", "Planning": "Gold", "Reflection": "Gold", "Good deeds": "Gold"
     }
 
-    return render_template("dashboard.html", stats=stats, daily_challenges=daily_challenges, username=username, selected_titles=selected_titles, title_info=title_info, skill_to_category=skill_to_category)
+    return render_template(
+        "dashboard.html",
+        stats=stats,
+        daily_challenges=daily_challenges,
+        username=username,
+        selected_titles=selected_titles,
+        selected_badges=selected_badges,
+        title_info=title_info,
+        badge_images=badge_images,
+        skill_to_category=skill_to_category
+    )
 
 
 @app.route("/card_red")
@@ -364,7 +396,7 @@ def update_selected_titles():
             c.execute("SELECT selected_titles FROM selected_titles WHERE user_id = ?", (user_id,))
             row = c.fetchone()
 
-            if row:
+            if row and row[0]:
                 selected_titles = json.loads(row[0])
             else:
                 selected_titles = []
@@ -383,11 +415,6 @@ def update_selected_titles():
     return jsonify({"status": "success"}), 200
 
 
-@app.route('/clear-title-animation')
-def clear_title_animation():
-    session.pop('show_title_animation', None)
-    return '', 204
-
 @app.route("/badges")
 def badges():
     user_id = session.get('user_id')
@@ -398,6 +425,9 @@ def badges():
         c = conn.cursor()
         c.execute("SELECT skill, level FROM progress WHERE user_id = ?", (user_id,))
         stats = c.fetchall()
+        c.execute("SELECT selected_badges FROM selected_badges WHERE user_id = ?", (user_id,))
+        row = c.fetchone()
+        current_selected_badges = json.loads(row[0]) if row and row[0] else []
 
     unlocked_badges = []
 
@@ -423,7 +453,50 @@ def badges():
         "Discipline": "Gold", "Planning": "Gold", "Reflection": "Gold", "Good deeds": "Gold"
     }
 
-    return render_template("badges.html", unlocked_badges=unlocked_badges, skill_to_category=skill_to_category, user_id=user_id)
+    return render_template("badges.html", unlocked_badges=unlocked_badges, skill_to_category=skill_to_category, user_id=user_id, current_selected_badges=current_selected_badges)
+
+
+@app.route('/update_selected_badges', methods=['POST'])
+def update_selected_badges():
+    if request.method == 'POST':
+        data = request.get_json()
+        user_id = session.get('user_id')
+        badge = data['title'] 
+        print(badge)
+        action = data['action']
+        print(action)
+
+        with sqlite3.connect("database.db") as conn:
+            c = conn.cursor()
+            c.execute("SELECT selected_badges FROM selected_badges WHERE user_id = ?", (user_id,))
+            row = c.fetchone()
+
+            if row and row[0]:
+                selected_badges = json.loads(row[0])
+            else:
+                selected_badges = []
+
+            # Add or remove the title based on the action
+            if action == 'add' and badge not in selected_badges:
+                selected_badges.append(badge)
+            elif action == 'remove' and badge in selected_badges:
+                selected_badges.remove(badge)
+
+            # Save the updated selection back into the database
+            selected_json = json.dumps(selected_badges)
+            print(selected_json)
+            c.execute("INSERT OR REPLACE INTO selected_badges (user_id, selected_badges) VALUES (?, ?)",(user_id, selected_json))
+            conn.commit()
+
+    return jsonify({"status": "success"}), 200
+
+
+
+@app.route('/clear-title-animation')
+def clear_title_animation():
+    session.pop('show_title_animation', None)
+    return '', 204
+
 
 
 @app.route('/add_xp', methods=['POST'])

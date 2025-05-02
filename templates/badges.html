@@ -7,7 +7,7 @@
     <title>XP Tracker</title>
     <link rel="stylesheet" href="/static/styles.css">
 </head>
-<body>
+<body style="background-color: #e0e0e5">
     <nav style="background-color: #f8f9fa; padding: 10px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #ddd;">
         <div style="display: flex; gap: 15px; align-items: center;">
             <a href="{{ url_for('index') }}" style="text-decoration: none; font-weight: bold; color: #333;">🏠 Home</a>
@@ -47,10 +47,12 @@
                 <h2 class="category-title border-{{ category|lower }}">{{ category }}</h2>
                 <div class="badge-grid">
                     {% for badge in badges %}
-                        <div class="badgecard badge-border-{{ category|lower }}">
+                        <div class="badgecard badge-border-{{ category|lower }} {% if badge['name'] in current_selected_badges %}selected{% endif %}"
+                            data-title="{{ badge['name'] }}" data-level="{{ badge['description'] }}">
                             <img src="../{{ badge['image'] }}" alt="{{ badge['name'] }}" class="badge-image">
                             <span class="badge-title">{{ badge['name'] }}</span>
                             <p class="badge-description">{{ badge['description'] }}</p>
+                            <input type="checkbox" class="checkbox" {% if badge['name'] in current_selected_badges %}checked{% endif %} hidden>
                         </div>
                     {% endfor %}
                 </div>
@@ -60,6 +62,51 @@
     {% else %}
     <p>You haven't unlocked any badges yet. Keep leveling up!</p>
     {% endif %}
+
+    <script>
+
+        
+        //THAT SHIT I NEED TO REVIEW BECAUSE IT WORKS FOR SELECTING AND DESELECTING AND IT IS FUCKING DARK MAGIC
+
+
+        // Handle clicking on title cards to toggle selection
+        document.querySelectorAll('.badgecard').forEach(card => {
+            card.addEventListener('click', function() {
+                const title = card.getAttribute('data-title');
+                const userId = "{{ user_id }}";  // Pass user ID from Flask to JavaScript
+                const selected = card.classList.contains('selected');
+                const level = card.getAttribute('data-level');
+
+                // Toggle the selection state
+                if (selected) {
+                    card.classList.remove('selected');
+                    card.querySelector('.checkbox').checked = false;
+                    updateSelection(userId, title, 'remove');
+                } else {
+                    card.classList.add('selected');
+                    card.querySelector('.checkbox').checked = true;
+                    updateSelection(userId, title, 'add');
+                }
+                });
+            });
+
+        // Function to send the selection update to the server
+        function updateSelection(userId, title, action) {
+            fetch('/update_selected_badges', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    user_id: userId,
+                    title: title,
+                    action: action
+                })
+            });
+        }
+    </script>
+
+
 </body>
 {% endblock %}
 

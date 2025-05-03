@@ -31,7 +31,7 @@
                     {% for badge in badges %}
                         <div class="badgecard badge-border-{{ category|lower }} {% if badge['name'] in current_selected_badges %}selected{% endif %}"
                             data-title="{{ badge['name'] }}" data-level="{{ badge['description'] }}">
-                            <img src="../{{ badge['image'] }}" alt="{{ badge['name'] }}" class="badge-image">
+                            <img src="{{ url_for('static', filename=badge['image']) }}" alt="{{ badge['name'] }}" class="badge-image">
                             <span class="badge-title">{{ badge['name'] }}</span>
                             <p class="badge-description">{{ badge['description'] }}</p>
                             <input type="checkbox" class="checkbox" {% if badge['name'] in current_selected_badges %}checked{% endif %} hidden>

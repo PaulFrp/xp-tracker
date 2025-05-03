@@ -21,7 +21,7 @@
             <div class="badge-grid" style="display: inline-block; text-align: center;">
                 {% for badge in selected_badges %}
                 <div class="badge-card" style="display: inline-block; margin: 10px;">
-                    <img src="{{ badge_images[badge] }}" alt="{{ badge }}" style="width: 100px; height: 100px;">
+                    <img src="static/{{ badge_images[badge] }}" alt="{{ badge }}" style="width: 100px; height: 100px;">
                 </div>
                 {% endfor %}
             </div>

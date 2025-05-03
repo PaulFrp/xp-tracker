@@ -9,52 +9,60 @@
     <link rel="stylesheet" href="/static/styles.css">
 
     {% include "navbar.html" %}
-    
-</head>
-<body style="background-color: #e0e0e5">
-    <nav class="main-navbar">
-        <div class="navbar-container">
-            <div class="nav-links">
-                <a href="{{ url_for('index') }}">🏠 Home</a>
-                {% for category in ["Red", "Blue", "Green", "Gold"] %}
-                    <a href="/card_{{ category|lower }}" class="category-link {{ category|lower }}">{{ category }}</a>
-                {% endfor %}
-                <a href="{{ url_for('titles') }}">Titles</a>
-                <a href="{{ url_for('badges') }}">Badges</a>
-            </div>
-            <div class="logout-form">
-                <form method="POST" action="{{ url_for('logout') }}">
-                    <button type="submit">Logout</button>
-                </form>
-            </div>
-        </div>
-    </nav>
 
-    <div>
-        {% for user in leaderboard_data %}
-            <h1 style="text-align: center;">This is {{ user.username }}</h1>
-            <table style="margin: 0 auto; border-collapse: collapse; width: 50%; text-align: center;">
-                <thead>
-                    <tr>
-                        <th>Skill</th>
-                        <th>Category</th>
-                        <th>XP</th>
-                        <th>Level</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for stat in user.stats %}
-                        <tr>
-                            <td>{{ stat[0] }}</td>
-                            <td>{{ stat[1] }}</td>
-                            <td>{{ stat[2] }}</td>
-                            <td>{{ stat[3] }}</td>
-                        </tr>
+</head>
+<div class="leaderboard-container">
+    {% for user in leaderboard_data %}
+        {% set rank_class = "" %}
+        {% if loop.index0 == 0 %}
+            {% set rank_class = "first-place" %}
+        {% elif loop.index0 == 1 %}
+            {% set rank_class = "second-place" %}
+        {% elif loop.index0 == 2 %}
+            {% set rank_class = "third-place" %}
+        {% endif %}
+        <a href="{{ url_for('public_profile', username=user.username) }}" class="user-card-link">
+        <div class="user-card {{ rank_class }}">
+            <h2>{{ user.username }}</h2>
+            <h3>Total Level: {{ user.overall_level }}</h3>
+    
+                {% set grouped_stats = {'Red': [], 'Blue': [], 'Green': [], 'Gold': []} %}
+                {% for stat in user.stats %}
+                    {% set _ = grouped_stats[stat[1]].append(stat) %}
+                {% endfor %}
+    
+                <div class="category-wrapper">
+                    {% for category, stats in grouped_stats.items() %}
+                        {% if stats %}
+                        <div class="category-card category-{{ category|lower }}">
+                            <h3>{{ category }} Skills</h3>
+                            <table class="leaderboard-table">
+                                <thead>
+                                    <tr>
+                                        <th>Skill</th>
+                                        <th>XP</th>
+                                        <th>Level</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for stat in stats %}
+                                    <tr>
+                                        <td>{{ stat[0] }}</td>
+                                        <td>{{ stat[2] }}</td>
+                                        <td>{{ stat[3] }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        {% endif %}
                     {% endfor %}
-                </tbody>
-            </table>
-            <hr style="margin: 20px 0;">
+                </div>
+            </div>
         {% endfor %}
+        </a>
     </div>
+    </body>
+    
 
 {% endblock %}

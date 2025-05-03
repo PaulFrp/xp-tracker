@@ -7,7 +7,7 @@
         "skill": "Strength",
         "level": 10
       },
-      "image": "static/images/badges/red/gym_goer.png"
+      "image": "images/badges/red/gym_goer.png"
     },
     {
       "name": "Power Builder",
@@ -16,7 +16,7 @@
         "skill": "Strength",
         "level": 20
       },
-      "image": "static/images/badges/red/power_builder.png"
+      "image": "images/badges/red/power_builder.png"
     },
     {
       "name": "Iron Core",
@@ -25,7 +25,7 @@
         "skill": "Strength",
         "level": 30
       },
-      "image": "static/images/badges/red/iron_core.png"
+      "image": "images/badges/red/iron_core.png"
     },
     {
       "name": "Titan of Strength",
@@ -34,7 +34,7 @@
         "skill": "Strength",
         "level": 40
       },
-      "image": "static/images/badges/red/titan_of_strength.png"
+      "image": "images/badges/red/titan_of_strength.png"
     },
     {
       "name": "Atlas Incarnate",
@@ -43,7 +43,7 @@
         "skill": "Strength",
         "level": 50
       },
-      "image": "static/images/badges/red/atlas_incarnate.png"
+      "image": "images/badges/red/atlas_incarnate.png"
     },
     {
       "name": "Jogger",
@@ -52,7 +52,7 @@
         "skill": "Endurance",
         "level": 10
       },
-      "image": "static/images/badges/red/jogger.png"
+      "image": "images/badges/red/jogger.png"
     },
     {
       "name": "Pace Breaker",
@@ -61,7 +61,7 @@
         "skill": "Endurance",
         "level": 20
       },
-      "image": "static/images/badges/red/pace_breaker.png"
+      "image": "images/badges/red/pace_breaker.png"
     },
     {
       "name": "Cardio Veteran",
@@ -70,7 +70,7 @@
         "skill": "Endurance",
         "level": 30
       },
-      "image": "static/images/badges/red/cardio_veteran.png"
+      "image": "images/badges/red/cardio_veteran.png"
     },
     {
       "name": "Endurance Machine",
@@ -79,7 +79,7 @@
         "skill": "Endurance",
         "level": 40
       },
-      "image": "static/images/badges/red/endurance_machine.png"
+      "image": "images/badges/red/endurance_machine.png"
     },
     {
       "name": "Marathon Soul",
@@ -88,7 +88,7 @@
         "skill": "Endurance",
         "level": 50
       },
-      "image": "static/images/badges/red/marathon_soul.png"
+      "image": "images/badges/red/marathon_soul.png"
     },
     {
       "name": "Swift Mover",
@@ -97,7 +97,7 @@
         "skill": "Mobility",
         "level": 10
       },
-      "image": "static/images/badges/red/swift_mover.png"
+      "image": "images/badges/red/swift_mover.png"
     },
     {
       "name": "Agile Traveler",
@@ -106,7 +106,7 @@
         "skill": "Mobility",
         "level": 20
       },
-      "image": "static/images/badges/red/agile_traveler.png"
+      "image": "images/badges/red/agile_traveler.png"
     },
     {
       "name": "Graceful Strider",
@@ -115,7 +115,7 @@
         "skill": "Mobility",
         "level": 30
       },
-      "image": "static/images/badges/red/graceful_strider.png"
+      "image": "images/badges/red/graceful_strider.png"
     },
     {
       "name": "Movement Maestro",
@@ -124,7 +124,7 @@
         "skill": "Mobility",
         "level": 40
       },
-      "image": "static/images/badges/red/movement_maestro.png"
+      "image": "images/badges/red/movement_maestro.png"
     },
     {
       "name": "Master of Motion",
@@ -133,7 +133,7 @@
         "skill": "Mobility",
         "level": 50
       },
-      "image": "static/images/badges/red/master_of_motion.png"
+      "image": "images/badges/red/master_of_motion.png"
     },
     {
       "name": "Quick Starter",
@@ -142,7 +142,7 @@
         "skill": "Speed",
         "level": 10
       },
-      "image": "static/images/badges/red/quick_starter.png"
+      "image": "images/badges/red/quick_starter.png"
     },
     {
       "name": "Swift Sprinter",
@@ -151,7 +151,7 @@
         "skill": "Speed",
         "level": 20
       },
-      "image": "static/images/badges/red/swift_sprinter.png"
+      "image": "images/badges/red/swift_sprinter.png"
     },
     {
       "name": "Blazing Fast",
@@ -160,7 +160,7 @@
         "skill": "Speed",
         "level": 30
       },
-      "image": "static/images/badges/red/blazing_fast.png"
+      "image": "images/badges/red/blazing_fast.png"
     },
     {
       "name": "Speed Demon",
@@ -169,7 +169,7 @@
         "skill": "Speed",
         "level": 40
       },
-      "image": "static/images/badges/red/speed_demon.png"
+      "image": "images/badges/red/speed_demon.png"
     },
     {
       "name": "Lightning Reflexes",
@@ -178,7 +178,7 @@
         "skill": "Speed",
         "level": 50
       },
-      "image": "static/images/badges/red/lightning_reflexes.png"
+      "image": "images/badges/red/lightning_reflexes.png"
     },
     {
       "name": "Bookworm",
@@ -187,7 +187,7 @@
         "skill": "Intelligence",
         "level": 10
       },
-      "image": "static/images/badges/blue/bookworm.png"
+      "image": "images/badges/blue/bookworm.png"
     },
     {
       "name": "Knowledge Seeker",
@@ -196,7 +196,7 @@
         "skill": "Intelligence",
         "level": 20
       },
-      "image": "static/images/badges/blue/knowledge_seeker.png"
+      "image": "images/badges/blue/knowledge_seeker.png"
     },
     {
       "name": "Cognitive Climber",
@@ -205,7 +205,7 @@
         "skill": "Intelligence",
         "level": 30
       },
-      "image": "static/images/badges/blue/cognitive_climber.png"
+      "image": "images/badges/blue/cognitive_climber.png"
     },
     {
       "name": "Mind Scholar",
@@ -214,7 +214,7 @@
         "skill": "Intelligence",
         "level": 40
       },
-      "image": "static/images/badges/blue/mind_scholar.png"
+      "image": "images/badges/blue/mind_scholar.png"
     },
     {
       "name": "Mastermind",
@@ -223,7 +223,7 @@
         "skill": "Intelligence",
         "level": 50
       },
-      "image": "static/images/badges/blue/mastermind.png"
+      "image": "images/badges/blue/mastermind.png"
     },
     {
       "name": "Iron Mind",
@@ -232,7 +232,7 @@
         "skill": "Concentration",
         "level": 10
       },
-      "image": "static/images/badges/blue/iron_mind.png"
+      "image": "images/badges/blue/iron_mind.png"
     },
     {
       "name": "Focus Adept",
@@ -241,7 +241,7 @@
         "skill": "Concentration",
         "level": 20
       },
-      "image": "static/images/badges/blue/focus_adept.png"
+      "image": "images/badges/blue/focus_adept.png"
     },
     {
       "name": "Zen Worker",
@@ -250,7 +250,7 @@
         "skill": "Concentration",
         "level": 30
       },
-      "image": "static/images/badges/blue/zen_worker.png"
+      "image": "images/badges/blue/zen_worker.png"
     },
     {
       "name": "Flow Architect",
@@ -259,7 +259,7 @@
         "skill": "Concentration",
         "level": 40
       },
-      "image": "static/images/badges/blue/flow_architect.png"
+      "image": "images/badges/blue/flow_architect.png"
     },
     {
       "name": "Mental Fortress",
@@ -268,7 +268,7 @@
         "skill": "Concentration",
         "level": 50
       },
-      "image": "static/images/badges/blue/mental_fortress.png"
+      "image": "images/badges/blue/mental_fortress.png"
     },
     {
       "name": "Puzzle Solver",
@@ -277,7 +277,7 @@
         "skill": "Logic",
         "level": 10
       },
-      "image": "static/images/badges/blue/puzzle_solver.png"
+      "image": "images/badges/blue/puzzle_solver.png"
     },
     {
       "name": "Logical Thinker",
@@ -286,7 +286,7 @@
         "skill": "Logic",
         "level": 20
       },
-      "image": "static/images/badges/blue/logical_thinker.png"
+      "image": "images/badges/blue/logical_thinker.png"
     },
     {
       "name": "Strategist",
@@ -295,7 +295,7 @@
         "skill": "Logic",
         "level": 30
       },
-      "image": "static/images/badges/blue/strategist.png"
+      "image": "images/badges/blue/strategist.png"
     },
     {
       "name": "Tactician",
@@ -304,7 +304,7 @@
         "skill": "Logic",
         "level": 40
       },
-      "image": "static/images/badges/blue/tactician.png"
+      "image": "images/badges/blue/tactician.png"
     },
     {
       "name": "Grand Architect",
@@ -313,7 +313,7 @@
         "skill": "Logic",
         "level": 50
       },
-      "image": "static/images/badges/blue/grand_architect.png"
+      "image": "images/badges/blue/grand_architect.png"
     },
     {
       "name": "Creative Spark",
@@ -322,7 +322,7 @@
         "skill": "Creativity",
         "level": 10
       },
-      "image": "static/images/badges/blue/creative_spark.png"
+      "image": "images/badges/blue/creative_spark.png"
     },
     {
       "name": "Idea Alchemist",
@@ -331,7 +331,7 @@
         "skill": "Creativity",
         "level": 20
       },
-      "image": "static/images/badges/blue/idea_alchemist.png"
+      "image": "images/badges/blue/idea_alchemist.png"
     },
     {
       "name": "Artisan of Thought",
@@ -340,7 +340,7 @@
         "skill": "Creativity",
         "level": 30
       },
-      "image": "static/images/badges/blue/artisan_of_thought.png"
+      "image": "images/badges/blue/artisan_of_thought.png"
     },
     {
       "name": "Visionary",
@@ -349,7 +349,7 @@
         "skill": "Creativity",
         "level": 40
       },
-      "image": "static/images/badges/blue/visionary.png"
+      "image": "images/badges/blue/visionary.png"
     },
     {
       "name": "Creative Sage",
@@ -358,7 +358,7 @@
         "skill": "Creativity",
         "level": 50
       },
-      "image": "static/images/badges/blue/creative_sage.png"
+      "image": "images/badges/blue/creative_sage.png"
     },
     {
       "name": "Steady Hand",
@@ -367,7 +367,7 @@
         "skill": "Dexterity",
         "level": 10
       },
-      "image": "static/images/badges/green/steady_hand.png"
+      "image": "images/badges/green/steady_hand.png"
     },
     {
       "name": "Quick Fingers",
@@ -376,7 +376,7 @@
         "skill": "Dexterity",
         "level": 20
       },
-      "image": "static/images/badges/green/quick_fingers.png"
+      "image": "images/badges/green/quick_fingers.png"
     },
     {
       "name": "Precision Master",
@@ -385,7 +385,7 @@
         "skill": "Dexterity",
         "level": 30
       },
-      "image": "static/images/badges/green/precision_master.png"
+      "image": "images/badges/green/precision_master.png"
     },
     {
       "name": "Motion Artist",
@@ -394,7 +394,7 @@
         "skill": "Dexterity",
         "level": 40
       },
-      "image": "static/images/badges/green/motion_artist.png"
+      "image": "images/badges/green/motion_artist.png"
     },
     {
       "name": "Kinetic Prodigy",
@@ -403,7 +403,7 @@
         "skill": "Dexterity",
         "level": 50
       },
-      "image": "static/images/badges/green/kinetic_prodigy.png"
+      "image": "images/badges/green/kinetic_prodigy.png"
     },
     {
       "name": "Healthy Starter",
@@ -412,7 +412,7 @@
         "skill": "Vitality",
         "level": 10
       },
-      "image": "static/images/badges/green/healthy_starter.png"
+      "image": "images/badges/green/healthy_starter.png"
     },
     {
       "name": "Wellness Hero",
@@ -421,7 +421,7 @@
         "skill": "Vitality",
         "level": 20
       },
-      "image": "static/images/badges/green/wellness_hero.png"
+      "image": "images/badges/green/wellness_hero.png"
     },
     {
       "name": "Vital Force",
@@ -430,7 +430,7 @@
         "skill": "Vitality",
         "level": 30
       },
-      "image": "static/images/badges/green/vital_force.png"
+      "image": "images/badges/green/vital_force.png"
     },
     {
       "name": "Balanced Guardian",
@@ -439,7 +439,7 @@
         "skill": "Vitality",
         "level": 40
       },
-      "image": "static/images/badges/green/balanced_guardian.png"
+      "image": "images/badges/green/balanced_guardian.png"
     },
     {
       "name": "Life Engine",
@@ -448,7 +448,7 @@
         "skill": "Vitality",
         "level": 50
       },
-      "image": "static/images/badges/green/life_engine.png"
+      "image": "images/badges/green/life_engine.png"
     },
     {
       "name": "Quick Healer",
@@ -457,7 +457,7 @@
         "skill": "Recovery",
         "level": 10
       },
-      "image": "static/images/badges/green/quick_healer.png"
+      "image": "images/badges/green/quick_healer.png"
     },
     {
       "name": "Resilient Bouncer",
@@ -466,7 +466,7 @@
         "skill": "Recovery",
         "level": 20
       },
-      "image": "static/images/badges/green/resilient_bouncer.png"
+      "image": "images/badges/green/resilient_bouncer.png"
     },
     {
       "name": "Healing Force",
@@ -475,7 +475,7 @@
         "skill": "Recovery",
         "level": 30
       },
-      "image": "static/images/badges/green/healing_force.png"
+      "image": "images/badges/green/healing_force.png"
     },
     {
       "name": "Recovery Expert",
@@ -484,7 +484,7 @@
         "skill": "Recovery",
         "level": 40
       },
-      "image": "static/images/badges/green/recovery_expert.png"
+      "image": "images/badges/green/recovery_expert.png"
     },
     {
       "name": "Regeneration Master",
@@ -493,7 +493,7 @@
         "skill": "Recovery",
         "level": 50
       },
-      "image": "static/images/badges/green/regeneration_master.png"
+      "image": "images/badges/green/regeneration_master.png"
     },
     {
       "name": "Kind Heart",
@@ -502,7 +502,7 @@
         "skill": "Affection",
         "level": 10
       },
-      "image": "static/images/badges/green/kind_heart.png"
+      "image": "images/badges/green/kind_heart.png"
     },
     {
       "name": "Friendly Soul",
@@ -511,7 +511,7 @@
         "skill": "Affection",
         "level": 20
       },
-      "image": "static/images/badges/green/friendly_soul.png"
+      "image": "images/badges/green/friendly_soul.png"
     },
     {
       "name": "Loyal Companion",
@@ -520,7 +520,7 @@
         "skill": "Affection",
         "level": 30
       },
-      "image": "static/images/badges/green/loyal_companion.png"
+      "image": "images/badges/green/loyal_companion.png"
     },
     {
       "name": "Heartfelt Giver",
@@ -529,7 +529,7 @@
         "skill": "Affection",
         "level": 40
       },
-      "image": "static/images/badges/green/heartfelt_giver.png"
+      "image": "images/badges/green/heartfelt_giver.png"
     },
     {
       "name": "Affectionate Leader",
@@ -538,7 +538,7 @@
         "skill": "Affection",
         "level": 50
       },
-      "image": "static/images/badges/green/affectionate_leader.png"
+      "image": "images/badges/green/affectionate_leader.png"
     },
     {
       "name": "Routine Maker",
@@ -547,7 +547,7 @@
         "skill": "Discipline",
         "level": 10
       },
-      "image": "static/images/badges/gold/routine_maker.png"
+      "image": "images/badges/gold/routine_maker.png"
     },
     {
       "name": "Consistency Champ",
@@ -556,7 +556,7 @@
         "skill": "Discipline",
         "level": 20
       },
-      "image": "static/images/badges/gold/consistency_champ.png"
+      "image": "images/badges/gold/consistency_champ.png"
     },
     {
       "name": "Willpower Adept",
@@ -565,7 +565,7 @@
         "skill": "Discipline",
         "level": 30
       },
-      "image": "static/images/badges/gold/willpower_adept.png"
+      "image": "images/badges/gold/willpower_adept.png"
     },
     {
       "name": "Habitsmith",
@@ -574,7 +574,7 @@
         "skill": "Discipline",
         "level": 40
       },
-      "image": "static/images/badges/gold/habitsmith.png"
+      "image": "images/badges/gold/habitsmith.png"
     },
     {
       "name": "Master of Discipline",
@@ -583,7 +583,7 @@
         "skill": "Discipline",
         "level": 50
       },
-      "image": "static/images/badges/gold/master_of_discipline.png"
+      "image": "images/badges/gold/master_of_discipline.png"
     },
     {
       "name": "Strategic Thinker",
@@ -592,7 +592,7 @@
         "skill": "Planning",
         "level": 10
       },
-      "image": "static/images/badges/gold/strategic_thinker.png"
+      "image": "images/badges/gold/strategic_thinker.png"
     },
     {
       "name": "Tactical Planner",
@@ -601,7 +601,7 @@
         "skill": "Planning",
         "level": 20
       },
-      "image": "static/images/badges/gold/tactical_planner.png"
+      "image": "images/badges/gold/tactical_planner.png"
     },
     {
       "name": "Master Organizer",
@@ -610,7 +610,7 @@
         "skill": "Planning",
         "level": 30
       },
-      "image": "static/images/badges/gold/master_organizer.png"
+      "image": "images/badges/gold/master_organizer.png"
     },
     {
       "name": "Visionary Planner",
@@ -619,7 +619,7 @@
         "skill": "Planning",
         "level": 40
       },
-      "image": "static/images/badges/gold/visionary_planner.png"
+      "image": "images/badges/gold/visionary_planner.png"
     },
     {
       "name": "Grand Strategist",
@@ -628,7 +628,7 @@
         "skill": "Planning",
         "level": 50
       },
-      "image": "static/images/badges/gold/grand_strategist.png"
+      "image": "images/badges/gold/grand_strategist.png"
     },
     {
       "name": "Introspective Beginner",
@@ -637,7 +637,7 @@
         "skill": "Reflection",
         "level": 10
       },
-      "image": "static/images/badges/gold/introspective_beginner.png"
+      "image": "images/badges/gold/introspective_beginner.png"
     },
     {
       "name": "Thoughtful Observer",
@@ -646,7 +646,7 @@
         "skill": "Reflection",
         "level": 20
       },
-      "image": "static/images/badges/gold/thoughtful_observer.png"
+      "image": "images/badges/gold/thoughtful_observer.png"
     },
     {
       "name": "Deep Thinker",
@@ -655,7 +655,7 @@
         "skill": "Reflection",
         "level": 30
       },
-      "image": "static/images/badges/gold/deep_thinker.png"
+      "image": "images/badges/gold/deep_thinker.png"
     },
     {
       "name": "Contemplative Sage",
@@ -664,7 +664,7 @@
         "skill": "Reflection",
         "level": 40
       },
-      "image": "static/images/badges/gold/contemplative_sage.png"
+      "image": "images/badges/gold/contemplative_sage.png"
     },
     {
       "name": "Wise Philosopher",
@@ -673,7 +673,7 @@
         "skill": "Reflection",
         "level": 50
       },
-      "image": "static/images/badges/gold/wise_philosopher.png"
+      "image": "images/badges/gold/wise_philosopher.png"
     },
     {
       "name": "Good Samaritan",
@@ -682,7 +682,7 @@
         "skill": "Good deeds",
         "level": 10
       },
-      "image": "static/images/badges/gold/good_samaritan.png"
+      "image": "images/badges/gold/good_samaritan.png"
     },
     {
       "name": "Generosity Advocate",
@@ -691,7 +691,7 @@
         "skill": "Good deeds",
         "level": 20
       },
-      "image": "static/images/badges/gold/generosity_advocate.png"
+      "image": "images/badges/gold/generosity_advocate.png"
     },
     {
       "name": "Altruism Champion",
@@ -700,7 +700,7 @@
         "skill": "Good deeds",
         "level": 30
       },
-      "image": "static/images/badges/gold/altruism_champion.png"
+      "image": "images/badges/gold/altruism_champion.png"
     },
     {
       "name": "Compassionate Soul",
@@ -709,7 +709,7 @@
         "skill": "Good deeds",
         "level": 40
       },
-      "image": "static/images/badges/gold/compassionate_soul.png"
+      "image": "images/badges/gold/compassionate_soul.png"
     },
     {
       "name": "Moral Pillar",
@@ -718,7 +718,7 @@
         "skill": "Good deeds",
         "level": 50
       },
-      "image": "static/images/badges/gold/moral_pillar.png"
+      "image": "images/badges/gold/moral_pillar.png"
     }
   ]
 }

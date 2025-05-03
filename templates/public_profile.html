@@ -1,0 +1,45 @@
+<!-- === templates/index.html === -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>XP Tracker</title>
+    <link rel="stylesheet" href="/static/styles.css">
+
+    {% include "navbar.html" %}
+
+</head>
+
+<h1 class="username-profile">{{ username }}'s Profile</h1>
+
+<h3 class="badge-box-title">Selected Badges</h3>
+<div class="badge-grid-display">
+    {% for badge in badges %}
+        <div class="badge-item badge-border-{{ badge.category|default('unknown') }}">
+            <img src="{{ url_for('static', filename=badge['image']) }}" alt="{{ badge['name'] }}" class="badge-icon">
+            <p class="badge-item-name">{{ badge.name }}</p>
+            <p class="badge-item-description">{{ badge.description }}</p>
+        </div>
+    {% endfor %}
+</div>
+
+
+{% if selected_titles %}
+    
+<div class="titles-section">
+    <div class="titles-box">
+            {% for title in selected_titles %}
+                {% set info = title_info[title] %}
+                {% set category = skill_to_category[info["skill"]] %}
+                <div class="title-card border-{{ category|lower }}" style="display: inline-block; margin: 10px;">
+                    <span class="level">Lvl {{ info.level }}</span>
+                    <span class="title">{{ title }}</span>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endif %}
+
+
+
+

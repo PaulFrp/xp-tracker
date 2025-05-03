@@ -191,6 +191,11 @@ def init_db():
         # Handle any exceptions (e.g., DB already initialized or connection issues)
         print(f"Error initializing the database: {e}")
 
+
+if __name__ == '__main__':
+    init_db()  # Initialize the database at application startup
+    app.run(debug=True)
+
 @app.route("/")
 def index():
     if 'user_id' in session:
@@ -805,7 +810,3 @@ def public_profile(username):
     )
 
     
-
-if __name__ == '__main__':
-    init_db()  # Initialize the database at application startup
-    app.run(debug=True)

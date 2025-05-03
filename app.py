@@ -15,6 +15,13 @@ with open(os.path.join(os.path.dirname(__file__), 'titles.json')) as f:
 with open(os.path.join(os.path.dirname(__file__), 'badges.json')) as f:
     BADGES = json.load(f)
 
+skill_order = [
+    "Strength", "Endurance", "Mobility", "Speed",
+    "Intelligence", "Concentration", "Logic", "Creativity",
+    "Dexterity", "Vitality", "Recovery", "Affection",
+    "Discipline", "Planning", "Reflection", "Good deeds"
+]
+
 # Define shared data outside the functions
 descriptions = {
     "Red": "Physical skills like strength and endurance.",
@@ -243,13 +250,26 @@ def register():
 def dashboard():
     if 'user_id' not in session:
         return redirect(url_for('login'))
+    
 
     user_id = session['user_id']
     # Query skills for this user only
     with get_db_connection() as conn:
         c = conn.cursor()
-        c.execute("SELECT skill, category, xp, level FROM progress WHERE user_id = %s", (user_id,))
+
+        #Make sure that skills are ordered in the same way as in the dashboard
+        placeholders = ','.join(['%s'] * len(skill_order))
+        c.execute(f"""
+            SELECT skill, category, xp, level 
+            FROM progress 
+            WHERE user_id = %s 
+            AND skill IN ({placeholders})
+            ORDER BY CASE skill
+                {''.join([f"WHEN '{skill}' THEN {i} " for i, skill in enumerate(skill_order)])}
+                ELSE 999 END
+        """, (user_id, *skill_order))
         stats = c.fetchall()
+
         c.execute("SELECT challenge, completed FROM daily WHERE user_id = %s", (user_id,))
         daily_challenges = c.fetchall()
         c.execute("SELECT username FROM users WHERE id = %s", (user_id,))
@@ -308,7 +328,21 @@ def card_red():
     with get_db_connection() as conn:
         c = conn.cursor()
         user_id = session['user_id']
-        c.execute("SELECT skill, category, xp, level FROM progress WHERE category = 'Red' AND user_id = %s", (user_id,))
+
+        #Make sure that skills are ordered in the same way as in the dashboard
+        c.execute("""
+            SELECT skill, category, xp, level 
+            FROM progress 
+            WHERE category = 'Red' AND user_id = %s 
+            ORDER BY 
+                CASE skill
+                    WHEN 'Strength' THEN 1
+                    WHEN 'Endurance' THEN 2
+                    WHEN 'Mobility' THEN 3
+                    WHEN 'Speed' THEN 4
+                END
+            """, (user_id,))
+        
         stats = c.fetchall()
 
     return render_template(
@@ -325,7 +359,20 @@ def card_blue():
     with get_db_connection() as conn:
         c = conn.cursor()
         user_id = session['user_id']
-        c.execute("SELECT skill, category, xp, level FROM progress WHERE category = 'Blue' AND user_id = %s", (user_id,))
+
+        #Make sure that skills are ordered in the same way as in the dashboard
+        c.execute("""
+            SELECT skill, category, xp, level 
+            FROM progress 
+            WHERE category = 'Blue' AND user_id = %s 
+            ORDER BY 
+                CASE skill
+                    WHEN 'Intelligence' THEN 1
+                    WHEN 'Concentration' THEN 2
+                    WHEN 'Logic' THEN 3
+                    WHEN 'Creativity' THEN 4
+                END
+            """, (user_id,))
         stats = c.fetchall()
 
     return render_template(
@@ -342,7 +389,20 @@ def card_green():
     with get_db_connection() as conn:
         c = conn.cursor()
         user_id = session['user_id']
-        c.execute("SELECT skill, category, xp, level FROM progress WHERE category = 'Green' AND user_id = %s", (user_id,))
+        
+        #Make sure that skills are ordered in the same way as in the dashboard
+        c.execute("""
+            SELECT skill, category, xp, level 
+            FROM progress 
+            WHERE category = 'Green' AND user_id = %s 
+            ORDER BY 
+                CASE skill
+                    WHEN 'Dexterity' THEN 1
+                    WHEN 'Vitality' THEN 2
+                    WHEN 'Recovery' THEN 3
+                    WHEN 'Affection' THEN 4
+                END
+            """, (user_id,))
         stats = c.fetchall()
 
     return render_template(
@@ -359,7 +419,20 @@ def card_gold():
     with get_db_connection() as conn:
         c = conn.cursor()
         user_id = session['user_id']
-        c.execute("SELECT skill, category, xp, level FROM progress WHERE category = 'Gold' AND user_id = %s", (user_id,))
+        
+        #Make sure that skills are ordered in the same way as in the dashboard
+        c.execute("""
+            SELECT skill, category, xp, level 
+            FROM progress 
+            WHERE category = 'Gold' AND user_id = %s 
+            ORDER BY 
+                CASE skill
+                    WHEN 'Discipline' THEN 1
+                    WHEN 'Planning' THEN 2
+                    WHEN 'Reflection' THEN 3
+                    WHEN 'Good deeds' THEN 4
+                END
+            """, (user_id,))
         stats = c.fetchall()
 
     return render_template(
@@ -625,6 +698,39 @@ def daily_challenges():
     conn.commit()
     conn.close()
     return jsonify(success=True)
+
+@app.route("/leaderboard")
+def leaderboard():
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+    
+    conn = get_db_connection()
+    c = conn.cursor()
+
+    # Fetch all users and their stats
+    c.execute("SELECT id, username FROM users")
+    user_data = c.fetchall()
+
+    leaderboard_data = []
+    for user_id, username in user_data:
+        placeholders = ','.join(['%s'] * len(skill_order))
+        c.execute(f"""
+            SELECT skill, category, xp, level 
+            FROM progress 
+            WHERE user_id = %s 
+            AND skill IN ({placeholders})
+            ORDER BY CASE skill
+                {''.join([f"WHEN '{skill}' THEN {i} " for i, skill in enumerate(skill_order)])}
+                ELSE 999 END
+        """, (user_id, *skill_order))
+        stats = c.fetchall()
+        leaderboard_data.append({
+            "username": username,
+            "stats": stats
+        })
+
+    conn.close()
+    return render_template("leaderboard.html", leaderboard_data=leaderboard_data)
     
 
 if __name__ == '__main__':

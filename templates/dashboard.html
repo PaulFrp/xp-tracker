@@ -9,23 +9,7 @@
     <link rel="stylesheet" href="/static/styles.css">
 </head>
 <body style="background-color: #e0e0e5">
-    <nav class="main-navbar">
-        <div class="navbar-container">
-            <div class="nav-links">
-                <a href="{{ url_for('index') }}">🏠 Home</a>
-                {% for category in ["Red", "Blue", "Green", "Gold"] %}
-                    <a href="/card_{{ category|lower }}" class="category-link {{ category|lower }}">{{ category }}</a>
-                {% endfor %}
-                <a href="{{ url_for('titles') }}">Titles</a>
-                <a href="{{ url_for('badges') }}">Badges</a>
-            </div>
-            <div class="logout-form">
-                <form method="POST" action="{{ url_for('logout') }}">
-                    <button type="submit">Logout</button>
-                </form>
-            </div>
-        </div>
-    </nav>
+    {% include "navbar.html" %}
     
     
     <header>

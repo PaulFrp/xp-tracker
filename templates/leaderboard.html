@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block content %}
+<!-- === templates/index.html === -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>XP Tracker</title>
+    <link rel="stylesheet" href="/static/styles.css">
+
+    {% include "navbar.html" %}
+    
+</head>
+<body style="background-color: #e0e0e5">
+    <nav class="main-navbar">
+        <div class="navbar-container">
+            <div class="nav-links">
+                <a href="{{ url_for('index') }}">🏠 Home</a>
+                {% for category in ["Red", "Blue", "Green", "Gold"] %}
+                    <a href="/card_{{ category|lower }}" class="category-link {{ category|lower }}">{{ category }}</a>
+                {% endfor %}
+                <a href="{{ url_for('titles') }}">Titles</a>
+                <a href="{{ url_for('badges') }}">Badges</a>
+            </div>
+            <div class="logout-form">
+                <form method="POST" action="{{ url_for('logout') }}">
+                    <button type="submit">Logout</button>
+                </form>
+            </div>
+        </div>
+    </nav>
+
+    <div>
+        {% for user in leaderboard_data %}
+            <h1 style="text-align: center;">This is {{ user.username }}</h1>
+            <table style="margin: 0 auto; border-collapse: collapse; width: 50%; text-align: center;">
+                <thead>
+                    <tr>
+                        <th>Skill</th>
+                        <th>Category</th>
+                        <th>XP</th>
+                        <th>Level</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for stat in user.stats %}
+                        <tr>
+                            <td>{{ stat[0] }}</td>
+                            <td>{{ stat[1] }}</td>
+                            <td>{{ stat[2] }}</td>
+                            <td>{{ stat[3] }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <hr style="margin: 20px 0;">
+        {% endfor %}
+    </div>
+
+{% endblock %}

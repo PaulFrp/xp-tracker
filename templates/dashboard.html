@@ -63,12 +63,15 @@
                 {% else %}
                     {{ challenge }}
                 {% endif %}
+
+
                 <button class="complete-btn-{{ challenge|replace(' ', '') }}" 
-                    onclick="markComplete(this)" 
-                    style="background-color: {{ 'white' if completed == 1 else 'initial' }};"
-                    {% if completed == 1 %}disabled{% endif %}>
-                    {{ "✅ Done" if completed == 1 else "✔ Completed" }}
+                    onclick="toggleComplete(this, {{ 0 if completed else 1 }})"
+                    style="background-color: {{ 'white' if completed else 'initial' }};">
+                    {{ "✅ Done" if completed else "✔ Complete" }}
                 </button>
+
+
                 </div>
                 <progress value="{{ 100 if completed == 1 else 0 }}" max="100" 
                       class="{{ 'completed' if completed == 1 else '' }}"></progress>
@@ -147,26 +150,26 @@
         });
 
 
-        function markComplete(button) {
-            const challengeType = button.className.split('-')[2]; 
-            
+        function toggleComplete(button, newStatus) {
+            const challengeType = button.className.split('-')[2];
+
             fetch("/daily_challenges", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({ challenge: challengeType })
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ challenge: challengeType, completed: newStatus })
             })
             .then(response => {
-            if (response.ok) {
-                location.reload();
-            } else {
-                alert("Failed to mark challenge as complete");
-            }
+                if (response.ok) {
+                    location.reload();
+                } else {
+                    alert("Failed to update challenge status.");
+                }
             })
             .catch(error => {
-            console.error("Error:", error);
-            alert("An error occurred while marking the challenge as complete");
+                console.error("Error:", error);
+                alert("An error occurred.");
             });
         }
     </script>

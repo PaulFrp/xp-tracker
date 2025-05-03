@@ -700,13 +700,19 @@ def delete_xp():
 def daily_challenges():
     data = request.get_json()
     challenge = data.get('challenge')
+    completed = bool(data.get('completed', 1))  # Convert to boolean
+
     conn = get_db_connection()
     cursor = conn.cursor()
     user_id = session['user_id']
-    cursor.execute("UPDATE daily set completed = %s  WHERE challenge = %s AND user_id = %s", (True, challenge, user_id))
+    cursor.execute(
+        "UPDATE daily SET completed = %s WHERE challenge = %s AND user_id = %s", 
+        (completed, challenge, user_id)
+    )
     conn.commit()
     conn.close()
     return jsonify(success=True)
+
 
 @app.route("/leaderboard")
 def leaderboard():

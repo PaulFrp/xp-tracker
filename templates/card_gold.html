@@ -35,6 +35,7 @@
                 <div class="xp-bar-group">
                     {% for skill, cat, xp, level in stats %}
                         {% if cat == category %}
+                        {% set level_xp_required = 100 + 25 * ((level) * (level - 1)) // 2 %}
                         <div class="skill-bar">
                             <div class="skill-info">
                                 <span class="arrow" onclick="toggleSkillDetails('{{ skill|lower|replace(' ', '-') }}')">▶</span>
@@ -42,9 +43,9 @@
                             </div>
                         
                             <div class="xp-bar">
-                                <div class="fill" style="width: {{ (xp / (level * 100)) * 100 }}%"></div>
+                                <div class="fill" style="width: {{ (xp / level_xp_required) * 100 }}%"></div>
                             </div>
-                            <div class="xp">{{ xp }} / {{ level * 100 }} XP</div>
+                            <div class="xp">{{ xp }} / {{ level_xp_required }} XP</div>
                         
                             <div class="skill-details" id="details-{{ skill|lower|replace(' ', '-') }}">
                                 <p><strong>Description:</strong> {{ skill_descriptions[skill] }}</p>
@@ -54,6 +55,7 @@
                         {% endif %}
                     {% endfor %}
                 </div>
+
             </div>
             {% endfor %}
         </div>

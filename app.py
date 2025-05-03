@@ -65,22 +65,22 @@ skill_descriptions = {
 }
 
 skill_guides = {
-    "Strength": "🏋️ Weightlifting, bodyweight strength exercises",
-    "Endurance": "🏃 Running, cycling, long-distance workouts",
-    "Mobility": "🧘 Yoga, stretching routines, mobility drills",
-    "Speed": "⏱ Sprinting drills, agility training",
-    "Intelligence": "📚 Read books, take courses, learn new skills (languages, science, etc.)",
-    "Concentration": "🧠 Practice deep work (30+ min), mindfulness, no-phone blocks",
-    "Logic": "♟ Solve puzzles, do math problems, write code, play strategy games",
-    "Creativity": "🎨 Draw, write, compose music, brainstorm, design projects",
-    "Dexterity": "🎯 Play an instrument, juggle, craft, do precise movements or sports like tennis",
-    "Vitality": "💧 Track hydration, sleep 7–8h, eat balanced meals, avoid junk food",
-    "Recovery": "🛀 Do deep stretching, foam rolling, breathing exercises, quality sleep",
-    "Affection": "💞 Send kind messages, call loved ones, spend quality time with someone",
-    "Discipline": "📅 Complete daily routines, habit streaks, wake-up on time",
-    "Planning": "📝 Write to-do lists, plan your week, track long-term goals",
-    "Reflection": "🪞Journal your thoughts, write lessons from the day, meditate on choices",
-    "Good deeds": "🤝 Help someone, donate, volunteer, pick up trash, small acts of kindness"
+    "Strength": "🏋️ Weightlifting, bodyweight strength exercises (i.e. 1 push up = 1 XP)",
+    "Endurance": "🏃 Running, cycling, long-distance workouts (i.e. 100m running = 1 XP)" ,
+    "Mobility": "🧘 Yoga, mobility drills (i.e. 1min of mobility training= 1 XP)",
+    "Speed": "⏱ Sprinting drills, agility training (i.e. 100m sprint = 10 XP)",
+    "Intelligence": "📚 Read books, take courses, learn new skills (i.e. 1 page read = 1 XP)",
+    "Concentration": "🧠 Practice deep work (30+ min), mindfulness, no-phone blocks (i.e. 1 min of deep work = 1 XP)",
+    "Logic": "♟ Solve puzzles, do math problems, write code, play strategy games (i.e. 1 min of coding = 1 XP)",
+    "Creativity": "🎨 Draw, write, compose music, brainstorm, design projects (i.e. 1 min of drawing = 1 XP)",
+    "Dexterity": "🎯 Play an instrument, juggle, craft, do precise movements or sports like tennis (i.e. 1 min of tennis = 1 XP)",
+    "Vitality": "💧 Track hydration, sleep 7–8h, eat balanced meals, avoid junk food (i.e. 1 healthy meal = 10 XP, -10XP if junk food or alcohol)",
+    "Recovery": "🛀 Do deep stretching, foam rolling, breathing exercises, quality sleep (i.e. Stretching session after excercise = 10 XP)",
+    "Affection": "💞 Send kind messages, call loved ones, spend quality time with someone (i.e. 1 call with a loved one = 10 XP or 1 hug = 1XP)",
+    "Discipline": "📅 Complete daily routines, habit streaks, wake-up on time (i.e. Completing daily challenges = 10 XP)",
+    "Planning": "📝 Write to-do lists, plan your week, track long-term goals (i.e. Having a plan for the day = 10 XP)",
+    "Reflection": "🪞Journal your thoughts, write lessons from the day, meditate on choices (i.e. 1min reflecting = 1 XP)",
+    "Good deeds": "🤝 Help someone, donate, volunteer, pick up trash, small acts of kindness (i.e. 1 act of kindness = 10 XP)"
 }
 
 
@@ -190,11 +190,6 @@ def init_db():
     except Exception as e:
         # Handle any exceptions (e.g., DB already initialized or connection issues)
         print(f"Error initializing the database: {e}")
-
-
-if __name__ == '__main__':
-    init_db()  # Initialize the database at application startup
-    app.run(debug=True)
 
 @app.route("/")
 def index():
@@ -493,10 +488,7 @@ def update_selected_titles():
         data = request.get_json()
         user_id = session.get('user_id')
         title = data['title']
-        print(title)
         action = data['action']
-        print(action)
-
         with get_db_connection() as conn:
             c = conn.cursor()
             c.execute("SELECT selected_titles FROM selected_titles WHERE user_id = %s", (user_id,))
@@ -573,9 +565,7 @@ def update_selected_badges():
         data = request.get_json()
         user_id = session.get('user_id')
         badge = data['title'] 
-        print(badge)
         action = data['action']
-        print(action)
 
         with get_db_connection() as conn:
             c = conn.cursor()
@@ -595,7 +585,6 @@ def update_selected_badges():
 
             # Save the updated selection back into the database
             selected_json = json.dumps(selected_badges)
-            print(selected_json)
 
             c.execute("""
                 INSERT INTO selected_badges (user_id, selected_badges) 
@@ -631,29 +620,37 @@ def add_xp():
     row = cursor.fetchone()
 
     if row:
-        new_xp = row[0] + xp_to_add
-        cursor.execute("UPDATE progress SET xp = %s WHERE skill = %s AND user_id = %s", (new_xp, skill, user_id))
-        conn.commit()
-
-        # Fetch level again (in case already updated elsewhere)
-        cursor.execute("SELECT level FROM progress WHERE user_id = %s AND skill = %s", (user_id, skill))
-        current_level = cursor.fetchone()[0]
+        current_xp, current_level = row
         old_level = current_level
+        new_xp = current_xp + xp_to_add
 
-        # Level-up loop
-        while new_xp >= current_level * 100:
-            current_level += 1
-            new_xp -= (current_level - 1) * 100
-            cursor.execute("UPDATE progress SET level = %s, xp = %s WHERE user_id = %s AND skill = %s",
-                           (current_level, new_xp, user_id, skill))
-            conn.commit()
+        # Level-up loop with increasing XP requirement per level
+        while True:
+            xp_needed = 100*current_level + 25 * sum(range(1, current_level))
+            if new_xp >= xp_needed:
+                new_xp -= xp_needed
+                current_level += 1
+            else:
+                break
 
+        # Update database
+        cursor.execute(
+            "UPDATE progress SET xp = %s, level = %s WHERE user_id = %s AND skill = %s",
+            (new_xp, current_level, user_id, skill)
+        )
+        conn.commit()
         conn.close()
-        return jsonify({ "old_level": old_level, "current_level": current_level, "skill": skill })
+
+        return jsonify({
+            "old_level": old_level,
+            "current_level": current_level,
+            "skill": skill
+        })
 
     else:
         conn.close()
         return jsonify(success=False, error="Skill not found"), 404
+
 
     
 @app.route('/delete_xp', methods=['POST'])
@@ -665,33 +662,39 @@ def delete_xp():
     conn = get_db_connection()
     cursor = conn.cursor()
     user_id = session['user_id']
+
+    # Fetch current XP and level
     cursor.execute("SELECT xp, level FROM progress WHERE user_id = %s AND skill = %s", (user_id, skill))
     row = cursor.fetchone()
 
     if row:
-        new_xp = row[0] - xp_to_delete
-        cursor.execute("UPDATE progress SET xp = %s WHERE skill = %s AND user_id = %s", (new_xp, skill, user_id))
-        conn.commit()
-        cursor.execute("SELECT level FROM progress WHERE skill = %s", (skill,))
-        current_level = cursor.fetchone()[0]
-        #Need logic to avoid level to go below 1
-        while new_xp < 0: 
-            if current_level == 1: 
-                new_xp = 0
-                cursor.execute("UPDATE progress SET xp = %s WHERE skill = %s AND user_id = %s", (new_xp, skill, user_id))
-                break
-            else:
-                cursor.execute("UPDATE progress SET level = %s WHERE skill = %s AND user_id = %s ", (current_level - 1, skill, user_id))
-                new_xp += (current_level - 1) * 100
-                cursor.execute("UPDATE progress SET xp = %s WHERE skill = %s AND user_id = %s", (new_xp, skill, user_id))
-                current_level -= 1
+        current_xp, current_level = row
+        new_xp = current_xp - xp_to_delete
+        
+        # Level-down logic with increasing XP per level
+        while new_xp < 0 and current_level > 1:
+            # Calculate the XP needed for the current level
+            current_level -= 1
+            xp_needed_for_last_level = 100  + 25 * sum(range(1, current_level))
+            new_xp += xp_needed_for_last_level
+
+        # Ensure XP doesn't go below 0 and level doesn't go below 1
+        if new_xp < 0 and current_level == 1:
+            new_xp = 0
+
+        cursor.execute(
+            "UPDATE progress SET xp = %s, level = %s WHERE user_id = %s AND skill = %s",
+            (new_xp, current_level, user_id, skill)
+        )
         conn.commit()
         conn.close()
-        return jsonify(success=True, level_down=(new_xp < 0))
-            
+
+        return jsonify(success=True, current_level=current_level, new_xp=new_xp)
+
     else:
         conn.close()
         return jsonify(success=False, error="Skill not found"), 404
+
 
 @app.route('/daily_challenges', methods=['POST'])
 def daily_challenges():
@@ -810,3 +813,7 @@ def public_profile(username):
     )
 
     
+
+if __name__ == '__main__':
+    init_db()  # Initialize the database at application startup
+    app.run(debug=True)

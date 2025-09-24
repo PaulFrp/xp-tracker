@@ -177,7 +177,7 @@ def init_db():
             conn.commit()
 
             # Check if the reset is needed
-            c.execute("SELECT value FROM config WHERE key = %s", ("last_reset_date",)))
+            c.execute("SELECT value FROM config WHERE key = %s", ("last_reset_date",))
             last_reset_date = c.fetchone()[0]
             current_date = datetime.now().strftime("%Y-%m-%d")
 

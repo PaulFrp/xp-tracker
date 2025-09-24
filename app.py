@@ -105,6 +105,34 @@ def get_db_connection():
         port=port
     )
 
+def reset_daily_challenges_if_needed():
+    try:
+        with get_db_connection() as conn:
+            c = conn.cursor()
+
+            # Ensure last_reset_date exists
+            c.execute("""
+                INSERT INTO config (key, value)
+                VALUES (%s, %s)
+                ON CONFLICT (key) DO NOTHING
+            """, ("last_reset_date", "1970-01-01"))
+
+            # Fetch last reset date
+            c.execute("SELECT value FROM config WHERE key = %s", ("last_reset_date",))
+            row = c.fetchone()
+            last_reset_date = row[0] if row else "1970-01-01"
+
+            current_date = datetime.now().strftime("%Y-%m-%d")
+            print("Current date:", current_date, "Last reset:", last_reset_date)
+
+            if current_date != last_reset_date:
+                print(f"Resetting daily challenges: {last_reset_date} -> {current_date}")
+                c.execute("UPDATE daily SET completed = %s", (False,))
+                c.execute("UPDATE config SET value = %s WHERE key = %s", (current_date, "last_reset_date"))
+                conn.commit()
+    except Exception as e:
+        print("Error in daily reset:", e)
+
 def init_db():
     try:
         with get_db_connection() as conn:
@@ -176,25 +204,7 @@ def init_db():
             
             conn.commit()
 
-            c.execute("SELECT value FROM config WHERE key = %s", ("last_reset_date",))
-            row = c.fetchone()
-            if row is None:
-                last_reset_date = "1970-01-01"
-                c.execute("INSERT INTO config (key, value) VALUES (%s, %s) ON CONFLICT (key) DO NOTHING",
-                        ("last_reset_date", last_reset_date))
-            else:
-                last_reset_date = row[0]
-
-            current_date = datetime.now().strftime("%Y-%m-%d")
-
-            if current_date != last_reset_date:
-                print(f"Resetting daily challenges: {last_reset_date} -> {current_date}")
-                # Reset daily challenges
-                c.execute("UPDATE daily SET completed = FALSE")
-                # Update last_reset_date
-                c.execute("UPDATE config SET value = %s WHERE key = %s", (current_date, 'last_reset_date'))
-                conn.commit()
-    
+            
     except Exception as e:
         # Handle any exceptions (e.g., DB already initialized or connection issues)
         print(f"Error initializing the database: {e}")
@@ -267,7 +277,7 @@ def dashboard():
     if 'user_id' not in session:
         return redirect(url_for('login'))
     
-
+    reset_daily_challenges_if_needed() 
     user_id = session['user_id']
     # Query skills for this user only
     with get_db_connection() as conn:

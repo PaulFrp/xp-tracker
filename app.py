@@ -186,6 +186,7 @@ def init_db():
 
                 # Update the last reset date
                 c.execute("UPDATE config SET value = %s WHERE key = 'last_reset_date'", (current_date,))
+                conn.commit()
     
     except Exception as e:
         # Handle any exceptions (e.g., DB already initialized or connection issues)

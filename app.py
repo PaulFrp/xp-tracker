@@ -176,17 +176,23 @@ def init_db():
             
             conn.commit()
 
-            # Check if the reset is needed
             c.execute("SELECT value FROM config WHERE key = %s", ("last_reset_date",))
-            last_reset_date = c.fetchone()[0]
+            row = c.fetchone()
+            if row is None:
+                last_reset_date = "1970-01-01"
+                c.execute("INSERT INTO config (key, value) VALUES (%s, %s) ON CONFLICT (key) DO NOTHING",
+                        ("last_reset_date", last_reset_date))
+            else:
+                last_reset_date = row[0]
+
             current_date = datetime.now().strftime("%Y-%m-%d")
 
             if current_date != last_reset_date:
+                print(f"Resetting daily challenges: {last_reset_date} -> {current_date}")
                 # Reset daily challenges
                 c.execute("UPDATE daily SET completed = FALSE")
-
-                # Update the last reset date
-                c.execute("UPDATE config SET value = %s WHERE key = 'last_reset_date'", (current_date,))
+                # Update last_reset_date
+                c.execute("UPDATE config SET value = %s WHERE key = %s", (current_date, 'last_reset_date'))
                 conn.commit()
     
     except Exception as e:

@@ -173,16 +173,17 @@ def init_db():
                 VALUES (%s, %s)
                 ON CONFLICT (key) DO NOTHING""", 
                 ("last_reset_date", "1970-01-01"))
+            
+            conn.commit()
 
             # Check if the reset is needed
-            c.execute("SELECT value FROM config WHERE key = 'last_reset_date'")
+            c.execute("SELECT value FROM config WHERE key = %s", ("last_reset_date",)))
             last_reset_date = c.fetchone()[0]
             current_date = datetime.now().strftime("%Y-%m-%d")
 
             if current_date != last_reset_date:
                 # Reset daily challenges
                 c.execute("UPDATE daily SET completed = FALSE")
-                conn.commit()
 
                 # Update the last reset date
                 c.execute("UPDATE config SET value = %s WHERE key = 'last_reset_date'", (current_date,))

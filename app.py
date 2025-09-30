@@ -1,13 +1,7 @@
-
-
-from datetime import datetime
 from flask import Flask
-import psycopg2
-import urllib.parse as urlparse
 from dotenv import load_dotenv
 import os
-import json
-from utils.db import get_db_connection, init_db
+from utils.db import init_db
 
 load_dotenv()  # Load environment variables from a .env file
 
@@ -46,6 +40,6 @@ def create_app():
     
 # Just for local Dev
 
-# if __name__ == '__main__':
-    # app = create_app()
-    #app.run(debug=True)
+if __name__ == '__main__':
+    app = create_app()
+    app.run(debug=True)

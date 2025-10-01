@@ -21,7 +21,7 @@ def public_profile(username):
         user_levels = {skill: level for skill, level in stats}
 
         # Get selected titles and levels
-        c.execute("SELECT selected_titles FROM selected_titles WHERE user_id = %s", (user_id,))
+        c.execute("SELECT selected_titles FROM selected_decorations WHERE user_id = %s", (user_id,))
         row = c.fetchone()
         selected_titles = json.loads(row[0]) if row and row[0] else []
 
@@ -37,10 +37,10 @@ def public_profile(username):
                 unlocked_titles[skill] = sorted(unlocked)
 
         # Get selected badges
-        c.execute("SELECT selected_badges FROM selected_badges WHERE user_id = %s", (user_id,))
+        c.execute("SELECT selected_badges FROM selected_decorations WHERE user_id = %s", (user_id,))
         row = c.fetchone()
         selected_badges = json.loads(row[0]) if row and row[0] else []
-        c.execute("SELECT selected_titles FROM selected_titles WHERE user_id = %s", (user_id,))
+        c.execute("SELECT selected_titles FROM selected_decorations WHERE user_id = %s", (user_id,))
         row = c.fetchone()
         selected_titles = json.loads(row[0]) if row and row[0] else []
         

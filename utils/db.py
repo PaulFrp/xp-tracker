@@ -62,18 +62,8 @@ def init_db():
                 )
             ''')
 
-            #Probably fucked it because the next 2 tables are identical
             c.execute('''
-                CREATE TABLE IF NOT EXISTS selected_titles (
-                user_id INTEGER PRIMARY KEY,
-                selected_titles TEXT,
-                selected_badges TEXT,
-                FOREIGN KEY(user_id) REFERENCES users(id)
-                )
-            ''')
-
-            c.execute('''
-                CREATE TABLE IF NOT EXISTS selected_badges (
+                CREATE TABLE IF NOT EXISTS selected_decorations (
                 user_id INTEGER PRIMARY KEY,
                 selected_titles TEXT,
                 selected_badges TEXT,

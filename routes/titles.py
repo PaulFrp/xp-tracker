@@ -15,7 +15,7 @@ def titles():
         c = conn.cursor()
         c.execute("SELECT skill, level FROM progress WHERE user_id = %s", (user_id,))
         stats = c.fetchall()
-        c.execute("SELECT selected_titles FROM selected_titles WHERE user_id = %s", (user_id,))
+        c.execute("SELECT selected_titles FROM selected_decorations WHERE user_id = %s", (user_id,))
         row = c.fetchone()
         current_selected_titles = json.loads(row[0]) if row and row[0] else []
 
@@ -51,7 +51,7 @@ def update_selected_titles():
         action = data['action']
         with get_db_connection() as conn:
             c = conn.cursor()
-            c.execute("SELECT selected_titles FROM selected_titles WHERE user_id = %s", (user_id,))
+            c.execute("SELECT selected_titles FROM selected_decorations WHERE user_id = %s", (user_id,))
             row = c.fetchone()
 
             if row and row[0]:
@@ -68,7 +68,7 @@ def update_selected_titles():
             # Save the updated selection back into the database
             selected_json = json.dumps(selected_titles)
             c.execute("""
-                INSERT INTO selected_titles (user_id, selected_titles)
+                INSERT INTO selected_decorations (user_id, selected_titles)
                 VALUES (%s, %s)
                 ON CONFLICT (user_id)
                 DO UPDATE SET selected_titles = EXCLUDED.selected_titles

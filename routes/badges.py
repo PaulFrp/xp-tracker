@@ -15,7 +15,7 @@ def badges():
         c = conn.cursor()
         c.execute("SELECT skill, level FROM progress WHERE user_id = %s", (user_id,))
         stats = c.fetchall()
-        c.execute("SELECT selected_badges FROM selected_badges WHERE user_id = %s", (user_id,))
+        c.execute("SELECT selected_badges FROM selected_decorations WHERE user_id = %s", (user_id,))
         row = c.fetchone()
         current_selected_badges = json.loads(row[0]) if row and row[0] else []
 
@@ -56,7 +56,7 @@ def update_selected_badges():
 
         with get_db_connection() as conn:
             c = conn.cursor()
-            c.execute("SELECT selected_badges FROM selected_badges WHERE user_id = %s", (user_id,))
+            c.execute("SELECT selected_badges FROM selected_decorations WHERE user_id = %s", (user_id,))
             row = c.fetchone()
 
             if row and row[0]:
@@ -74,7 +74,7 @@ def update_selected_badges():
             selected_json = json.dumps(selected_badges)
 
             c.execute("""
-                INSERT INTO selected_badges (user_id, selected_badges) 
+                INSERT INTO selected_decorations (user_id, selected_badges) 
                 VALUES (%s, %s)
                 ON CONFLICT (user_id)
                 DO UPDATE SET selected_badges = EXCLUDED.selected_badges

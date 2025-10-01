@@ -45,13 +45,13 @@ def dashboard():
             return redirect(url_for('login.login'))  # or render an error page
         username = user_data[0]
 
-        c.execute("SELECT selected_titles FROM selected_titles WHERE user_id = %s", (user_id,))
+        c.execute("SELECT selected_titles FROM selected_decorations WHERE user_id = %s", (user_id,))
         row = c.fetchone()
         if row and row[0]:
             selected_titles = json.loads(row[0])
         else:
             selected_titles = []
-        c.execute("SELECT selected_badges FROM selected_badges WHERE user_id = %s", (user_id,))
+        c.execute("SELECT selected_badges FROM selected_decorations WHERE user_id = %s", (user_id,))
         row = c.fetchone()
         if row and row[0]:
             selected_badges = json.loads(row[0])

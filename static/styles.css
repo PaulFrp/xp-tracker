@@ -438,6 +438,64 @@ form button:hover {
     background-color: #0056b3;
 }
 
+
+.xp-add-btn {
+    background: #4caf50;
+    color: white;
+}
+
+.xp-del-btn {
+    background: #f44336;
+    color: white;
+}
+
+/* XP controls inline buttons */
+.xp-controls {
+    display: flex;
+    gap: 8px;
+    margin-left: auto;
+    /* push to the right */
+}
+
+.xp-controls button {
+    padding: 6px 12px;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 40px;
+}
+
+.xp-add-group{
+    margin-left: auto;
+}
+
+.xp-controls .xp-add-btn-inline {
+    background: linear-gradient(135deg, #4caf50, #81c784);
+    color: white;
+}
+
+.xp-controls .xp-del-btn-inline {
+    background: linear-gradient(135deg, #f44336, #ef5350);
+    color: white;
+}
+
+.xp-controls button:hover {
+    transform: translateY(-2px) scale(1.05);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.xp-controls button:active {
+    transform: translateY(0) scale(0.98);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
 /* Daily challenge */
 #daily-challenges {
     background: #fdfdfd;

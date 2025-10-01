@@ -62,6 +62,67 @@ document.getElementById("xp-delete-form").addEventListener("submit", async funct
     }
 });
 
+// Handle inline Add XP buttons
+document.querySelectorAll(".xp-add-btn-inline").forEach(btn => {
+    btn.addEventListener("click", async () => {
+        const skill = btn.dataset.skill;
+        const category = btn.dataset.category;
+        const amount = parseInt(btn.dataset.add, 10);
+
+        const response = await fetch("/add_xp", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ skill: skill, xp: amount, category: category })
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            const newLevel = data.current_level;
+            const previousLevel = data.old_level;
+
+            if (newLevel > previousLevel) {
+                const skillElements = document.querySelectorAll(".skill-bar .skill-name");
+                skillElements.forEach(el => {
+                    if (el.textContent.includes(skill)) {
+                        const skillBar = el.closest(".skill-bar");
+                        skillBar.classList.add("level-up");
+                        skillBar.addEventListener("animationend", () => {
+                            skillBar.classList.remove("level-up");
+                        }, { once: true });
+                    }
+                });
+                setTimeout(() => location.reload(), 600);
+            } else {
+                location.reload();
+            }
+        } else {
+            alert("Failed to add XP");
+        }
+    });
+});
+
+// Handle inline Delete XP buttons
+document.querySelectorAll(".xp-del-btn-inline").forEach(btn => {
+    btn.addEventListener("click", async () => {
+        const skill = btn.dataset.skill;
+        const category = btn.dataset.category;
+        const amount = parseInt(btn.dataset.add, 10);
+
+        const response = await fetch("/delete_xp", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ skill: skill, xp: amount, category: category })
+        });
+
+        if (response.ok) {
+            location.reload();
+        } else {
+            alert("Failed to delete XP");
+        }
+    });
+});
+
+
 // Toggle category details
 function toggleDetails(category) {
     const section = document.getElementById(`details-${category}`);

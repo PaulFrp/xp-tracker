@@ -47,6 +47,15 @@
                         </div>
                         <div class="xp">{{ xp }} / {{ level_xp_required }} XP</div>
 
+                        <div class="xp-controls">
+                            <button type="button" class="xp-del-btn-inline" data-skill="{{ skill }}" data-category="{{ category }}" data-add="5">-5</button>
+                            <button type="button" class="xp-del-btn-inline" data-skill="{{ skill }}" data-category="{{ category }}" data-add="10">-10</button>
+                            <div class="xp-add-group">
+                                <button type="button" class="xp-add-btn-inline" data-skill="{{ skill }}" data-category="{{ category }}" data-add="5">+5</button>
+                                <button type="button" class="xp-add-btn-inline" data-skill="{{ skill }}" data-category="{{ category }}" data-add="10">+10</button>
+                            </div>
+                        </div>
+
                         <div class="skill-details" id="details-{{ skill|lower|replace(' ', '-') }}">
                             <p><strong>Description:</strong> {{ skill_descriptions[skill] }}</p>
                             <p><strong>Earn XP by:</strong> {{ skill_guides[skill] }}</p>

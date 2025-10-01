@@ -24,7 +24,7 @@ def add_xp():
 
         # Level-up loop with increasing XP requirement per level
         while True:
-            xp_needed = 100*current_level + 25 * sum(range(1, current_level))
+            xp_needed = 100 + 25 * ((current_level) * (current_level - 1)) // 2
             if new_xp >= xp_needed:
                 new_xp -= xp_needed
                 current_level += 1

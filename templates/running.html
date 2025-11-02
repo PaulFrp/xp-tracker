@@ -1,0 +1,64 @@
+<h2>Create Your Running Route</h2>
+<form id="runForm">
+    <label>Distance (km): <input type="number" name="distance" value="5"></label><br>
+    <label>Elevation gain (m): <input type="number" name="elevation" value="50"></label><br>
+    <input type="hidden" name="lat">
+    <input type="hidden" name="lon">
+    <button type="submit">Generate Route</button>
+</form>
+
+<div id="map" style="height:500px; margin-top:10px;"></div>
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+<script>
+    let map = L.map('map').setView([48.8668631, 2.2902009], 15); // initial dummy center
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap contributors'
+    }).addTo(map);
+
+    // Get user location
+    navigator.geolocation.getCurrentPosition(function (position) {
+        document.querySelector('[name="lat"]').value = position.coords.latitude;
+        document.querySelector('[name="lon"]').value = position.coords.longitude;
+    });
+
+    document.getElementById('runForm').onsubmit = async function (e) {
+        e.preventDefault();
+        const formData = Object.fromEntries(new FormData(e.target));
+
+        const payload = {
+            distance: formData.distance,
+            elevation: formData.elevation,
+            lat: formData.lat,
+            lon: formData.lon
+        };
+
+        const res = await fetch('/running/route', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+
+        const data = await res.json();
+
+        if (data.error) {
+            alert(data.error);
+            return;
+        }
+
+        console.log("Route JSON:", data);
+
+        // Draw route on map
+        const route = data.route;
+        if (route.length > 0) {
+            // Remove existing route if needed
+            if (window.routeLine) map.removeLayer(window.routeLine);
+
+            window.routeLine = L.polyline(route, { color: 'blue' }).addTo(map);
+            map.fitBounds(window.routeLine.getBounds());
+        }
+    }
+</script>

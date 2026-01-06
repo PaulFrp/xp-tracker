@@ -1,5 +1,6 @@
 import os
 import psycopg2
+from psycopg2 import sql
 import urllib.parse as urlparse
 
 def get_db_connection():
@@ -17,6 +18,40 @@ def get_db_connection():
         host=hostname,
         port=port
     )
+
+def create_database_if_not_exists():
+    """Create the database if it doesn't exist"""
+    result = urlparse.urlparse(os.environ.get("DATABASE_URL"))
+    username = result.username
+    password = result.password
+    database = result.path[1:]
+    hostname = result.hostname
+    port = result.port
+
+    try:
+        # Connect to the default 'postgres' database
+        conn = psycopg2.connect(
+            database="postgres",
+            user=username,
+            password=password,
+            host=hostname,
+            port=port
+        )
+        conn.autocommit = True
+        cursor = conn.cursor()
+        
+        # Check if database exists
+        cursor.execute(f"SELECT 1 FROM pg_database WHERE datname = %s", (database,))
+        exists = cursor.fetchone()
+        
+        if not exists:
+            cursor.execute(sql.SQL("CREATE DATABASE {}").format(sql.Identifier(database)))
+            print(f"Database '{database}' created successfully")
+        
+        cursor.close()
+        conn.close()
+    except Exception as e:
+        print(f"Error creating database: {e}")
 
 def init_db():
     try:
@@ -68,6 +103,31 @@ def init_db():
                 selected_titles TEXT,
                 selected_badges TEXT,
                 FOREIGN KEY(user_id) REFERENCES users(id)
+                )
+            ''')
+
+            c.execute('''
+                CREATE TABLE IF NOT EXISTS daily_stats (
+                    id SERIAL PRIMARY KEY,
+                    user_id INTEGER NOT NULL,
+                    date DATE NOT NULL,
+                    xp_earned INTEGER DEFAULT 0,
+                    challenges_completed INTEGER DEFAULT 0,
+                    UNIQUE(user_id, date),
+                    FOREIGN KEY(user_id) REFERENCES users(id)
+                )
+            ''')
+
+            c.execute('''
+                CREATE TABLE IF NOT EXISTS streaks (
+                    id SERIAL PRIMARY KEY,
+                    user_id INTEGER NOT NULL,
+                    skill TEXT NOT NULL,
+                    current_streak INTEGER DEFAULT 0,
+                    best_streak INTEGER DEFAULT 0,
+                    last_completed DATE,
+                    UNIQUE(user_id, skill),
+                    FOREIGN KEY(user_id) REFERENCES users(id)
                 )
             ''')
 

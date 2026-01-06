@@ -18,9 +18,10 @@ def login():
 
         if user:
             session['user_id'] = user[0]
-            return redirect(url_for('dashboard.dashboard'))  # or card_red, etc.
+            session.permanent = True
+            return redirect(url_for('dashboard.dashboard'))
         else:
-            return "Login failed"
+            return render_template("login.html", error="Invalid username or password")
 
     return render_template("login.html")
 

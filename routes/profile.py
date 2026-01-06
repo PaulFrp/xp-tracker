@@ -36,13 +36,15 @@ def public_profile(username):
             if unlocked:
                 unlocked_titles[skill] = sorted(unlocked)
 
-        # Get selected badges
-        c.execute("SELECT selected_badges FROM selected_decorations WHERE user_id = %s", (user_id,))
+        # Get selected badges and titles in one query
+        c.execute("SELECT selected_badges, selected_titles FROM selected_decorations WHERE user_id = %s", (user_id,))
         row = c.fetchone()
-        selected_badges = json.loads(row[0]) if row and row[0] else []
-        c.execute("SELECT selected_titles FROM selected_decorations WHERE user_id = %s", (user_id,))
-        row = c.fetchone()
-        selected_titles = json.loads(row[0]) if row and row[0] else []
+        if row:
+            selected_badges = json.loads(row[0]) if row[0] else []
+            selected_titles = json.loads(row[1]) if row[1] else []
+        else:
+            selected_badges = []
+            selected_titles = []
         
 
         # Collect full badge info

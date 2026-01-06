@@ -9,8 +9,9 @@
     <link rel="stylesheet" href="/static/styles.css">
 </head>
 
-<body>
+<body id="body" style="background-color: #e0e0e5">
     {% include "navbar.html" %}
+    <div class="page-container">
 
     <header>
         <div style="text-align: center;">
@@ -34,7 +35,7 @@
                 <div class="xp-bar-group">
                     {% for skill, cat, xp, level in stats %}
                     {% if cat == category %}
-                    {% set level_xp_required = 100 + 25 * ((level) * (level - 1)) // 2 %}
+                    {% set level_xp_required = 80 + 12 * (level * (level + 1)) // 2 %}
                     <div class="skill-bar">
                         <div class="skill-info">
                             <span class="arrow"
@@ -120,7 +121,15 @@
         </div>
     </main>
 
+    </div>
     <script src="/static/xp.js"></script>
+    <script>
+        // Dark mode toggle sync
+        const body = document.getElementById('body');
+        if (localStorage.getItem('darkMode') === 'true') {
+            body.classList.add('dark-mode');
+        }
+    </script>
 </body>
 
 </html>

@@ -1,0 +1,172 @@
+{% extends "base.html" %}
+{% block content %}
+<!-- === templates/index.html === -->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>XP Tracker</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+
+<body style="background-color: #e0e0e5">
+    {% include "navbar.html" %}
+
+
+    <header>
+        <h1 style="text-align: center;">Hello {{username}}</h1>
+
+        {% if selected_badges %}
+        <div style="text-align: center;" class="badges-container">
+            <div class="skill-box">
+                <div class="badge-grid" style="display: inline-block; text-align: center;">
+                    {% for badge in selected_badges %}
+                    <div class="badge-card" style="display: inline-block; margin: 10px;">
+                        <img src="static/{{ badge_images[badge] }}" alt="{{ badge }}"
+                            style="width: 100px; height: 100px;">
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        {% if selected_titles %}
+        <div style="text-align: center;" class="titles-container">
+            <div class="skill-box">
+                <div class="title-grid" style="display: inline-block; text-align: center;">
+                    {% for title in selected_titles %}
+                    {% set info = title_info[title] %}
+                    {% set category = skill_to_category[info["skill"]] %}
+                    <div class="title-card border-{{ category|lower }}" style="display: inline-block; margin: 10px;">
+                        <span class="level">Lvl {{ info.level }}</span>
+                        <span class="title">{{ title }}</span>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <section id="daily-challenges">
+            <h2>📅 Daily Challenges</h2>
+            <ul class="challenge-list">
+                {% for challenge, completed in daily_challenges %}
+                <li class="challenge-item">
+                    <div class="challenge-header">
+                        {{ challenge_bank.get(challenge, challenge) }}
+                        {% if completed %}
+                        ✅
+                        {% else %}
+                        ⭕
+                        {% endif %}
+                    </div>
+                
+                    <button class="complete-btn" data-challenge="{{ challenge }}"
+                        onclick="toggleComplete(this, {{ 0 if completed else 1 }})"
+                        style="background-color: {{ 'white' if completed else 'initial' }};">
+                        {{ "✅ Done" if completed else "✔ Complete" }}
+                    </button>
+
+                
+                    <progress value="{{ 100 if completed else 0 }}" max="100" class="{{ 'completed' if completed else '' }}"></progress>
+                </li>
+                {% endfor %}
+            </ul>
+        </section>
+
+    </header>
+
+
+    <main>
+        <div class="category-grid">
+            {% for category in ["Red", "Blue", "Green", "Gold"] %}
+            <a href="/card_{{category|lower}}" style="text-decoration: none;">
+                <div class="card-main {{ category|lower }}">
+                    <img src="../static/images/icons/icon_{{category|lower }}.png" alt="{{ category }} Icon"
+                        class="category-icon">
+                    <div class="xp-bar-group">
+                        {% for skill, cat, xp, level in stats %}
+                        {% if cat == category %}
+                        {% set level_xp_required = 100 + 25 * (level * (level + 1)) // 2 %}
+                        <div class="skill-bar">
+                            <span>{{ skill }} (Lvl {{ level }})</span>
+                            <div class="xp-bar">
+                                <div class="fill" style="width: {{ (xp / level_xp_required) * 100 }}%"></div>
+                            </div>
+                        </div>
+                        {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+            </a>
+            {% endfor %}
+        </div>
+
+    </main>
+
+    <script>
+        document.getElementById("xp-form").addEventListener("submit", async function (e) {
+            e.preventDefault();
+            const amount = document.getElementById("xp-amount").value;
+            const skill = document.getElementById("skill-select").value;
+
+            const response = await fetch("/add_xp", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ skill: skill, xp: amount })
+            });
+
+            if (response.ok) {
+                location.reload();
+            } else {
+                alert("Failed to add XP");
+            }
+        });
+
+        document.getElementById("xp-delete-form").addEventListener("submit", async function (e) {
+            e.preventDefault();
+            const amount = document.getElementById("xp-delete-amount").value;
+            const skill = document.getElementById("skill-delete-select").value;
+
+            const response = await fetch("/delete_xp", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ skill: skill, xp: amount })
+            });
+
+            if (response.ok) {
+                location.reload();
+            } else {
+                alert("Failed to delete XP");
+            }
+        });
+
+
+        function toggleComplete(button, newStatus) {
+                const challengeName = button.getAttribute("data-challenge");
+
+                fetch("/daily_challenges", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ challenge: challengeName, completed: newStatus })
+                })
+                    .then(response => {
+                        if (response.ok) {
+                            location.reload();
+                        } else {
+                            alert("Failed to update challenge.");
+                        }
+                    })
+                    .catch(err => console.error(err));
+            }
+    </script>
+</body>
+
+</html>
+{% endblock %}

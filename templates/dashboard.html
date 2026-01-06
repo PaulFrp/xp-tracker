@@ -1,171 +1,360 @@
 {% extends "base.html" %}
 {% block content %}
-<!-- === templates/index.html === -->
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
-    <title>XP Tracker</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>XP Tracker Dashboard</title>
     <link rel="stylesheet" href="/static/styles.css">
 </head>
 
-<body style="background-color: #e0e0e5">
+<body id="body" style="background-color: #e0e0e5">
     {% include "navbar.html" %}
 
+    <div class="dashboard-container">
+        <!-- TOP BAR: Time, Date, Dark Mode Toggle -->
+        <div class="top-bar">
+            <div class="time-date">
+                <div class="time" id="current-time">--:--</div>
+                <div class="date" id="current-date">--/--/----</div>
+            </div>
+            <h1 class="greeting">Good morning, {{username}}!</h1>
+            <button class="dark-mode-toggle" id="dark-mode-btn">🌙</button>
+        </div>
 
-    <header>
-        <h1 style="text-align: center;">Hello {{username}}</h1>
-
-        {% if selected_badges %}
-        <div style="text-align: center;" class="badges-container">
-            <div class="skill-box">
-                <div class="badge-grid" style="display: inline-block; text-align: center;">
-                    {% for badge in selected_badges %}
-                    <div class="badge-card" style="display: inline-block; margin: 10px;">
-                        <img src="static/{{ badge_images[badge] }}" alt="{{ badge }}"
-                            style="width: 100px; height: 100px;">
-                    </div>
-                    {% endfor %}
+        <!-- QUICK STATS -->
+        <div class="quick-stats">
+            <div class="stat-card">
+                <div class="stat-label">📊 Today's XP</div>
+                <div class="stat-value">{{ daily_stats.xp_earned }}</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">✅ Challenges Done</div>
+                <div class="stat-value">{{ daily_stats.challenges_completed }}/{{ daily_challenges|length }}</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">🔥 Best Streak</div>
+                <div class="stat-value">
+                    {% if streaks %}
+                        {% set best = streaks|map(attribute='best')|max %}
+                        {{ best }}
+                    {% else %}
+                        0
+                    {% endif %}
                 </div>
             </div>
         </div>
-        {% endif %}
 
-        {% if selected_titles %}
-        <div style="text-align: center;" class="titles-container">
-            <div class="skill-box">
-                <div class="title-grid" style="display: inline-block; text-align: center;">
+        <!-- DECORATIONS -->
+        {% if selected_badges or selected_titles %}
+        <div class="decorations-section">
+            {% if selected_badges %}
+            <div class="badges-showcase">
+                <h3>🏆 Badges</h3>
+                <div class="badge-grid">
+                    {% for badge in selected_badges %}
+                    <img src="static/{{ badge_images[badge] }}" alt="{{ badge }}" class="badge-display">
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+
+            {% if selected_titles %}
+            <div class="titles-showcase">
+                <h3>👑 Titles</h3>
+                <div class="title-grid">
                     {% for title in selected_titles %}
                     {% set info = title_info[title] %}
                     {% set category = skill_to_category[info["skill"]] %}
-                    <div class="title-card border-{{ category|lower }}" style="display: inline-block; margin: 10px;">
-                        <span class="level">Lvl {{ info.level }}</span>
-                        <span class="title">{{ title }}</span>
-                    </div>
+                    <span class="title-badge border-{{ category|lower }}">{{ title }}</span>
                     {% endfor %}
                 </div>
             </div>
+            {% endif %}
         </div>
         {% endif %}
 
-        <section id="daily-challenges">
-            <h2>📅 Daily Challenges</h2>
+        <!-- MAIN CONTENT GRID: Challenges + Quick XP Side by Side -->
+        <div class="main-content-grid">
+            <!-- LEFT: DAILY CHALLENGES -->
+            <section id="daily-challenges" class="daily-challenges-section">
+            <h2>📅 Today's Challenges</h2>
+            <div class="challenge-progress">
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: {{ (daily_stats.challenges_completed / daily_challenges|length * 100) if daily_challenges|length > 0 else 0 }}%"></div>
+                </div>
+                <span class="progress-text">{{ daily_stats.challenges_completed }}/{{ daily_challenges|length }} completed</span>
+            </div>
             <ul class="challenge-list">
                 {% for challenge, completed in daily_challenges %}
-                <li class="challenge-item">
-                    <div class="challenge-header">
-                        {{ challenge_bank.get(challenge, challenge) }}
-                        {% if completed %}
-                        ✅
-                        {% else %}
-                        ⭕
-                        {% endif %}
+                <li class="challenge-item {% if completed %}completed{% endif %}">
+                    <div class="challenge-content">
+                        <span class="challenge-icon">{{ challenge_bank.get(challenge, challenge) }}</span>
+                        <button class="complete-btn {% if completed %}done{% else %}pending{% endif %}" data-challenge="{{ challenge }}"
+                            onclick="toggleComplete(this, {{ 0 if completed else 1 }})">
+                            {{ "✅ Done" if completed else "⭕ Do it" }}
+                        </button>
                     </div>
-                
-                    <button class="complete-btn" data-challenge="{{ challenge }}"
-                        onclick="toggleComplete(this, {{ 0 if completed else 1 }})"
-                        style="background-color: {{ 'white' if completed else 'initial' }};">
-                        {{ "✅ Done" if completed else "✔ Complete" }}
-                    </button>
-
-                
-                    <progress value="{{ 100 if completed else 0 }}" max="100" class="{{ 'completed' if completed else '' }}"></progress>
                 </li>
                 {% endfor %}
             </ul>
         </section>
 
-    </header>
+            <!-- RIGHT: QUICK ADD XP -->
+            <section class="quick-xp-section">
+                <h2>📍 Quick Add XP</h2>
+                <div class="quick-xp-controls">
+                    <select id="quick-skill-select" class="quick-select">
+                        <option value="">Select a skill...</option>
+                        {% for skill, cat, xp, level in stats %}
+                        <option value="{{ skill }}">{{ skill }} (Lvl {{ level }})</option>
+                        {% endfor %}
+                    </select>
+                    <div class="quick-xp-buttons">
+                        <button class="quick-xp-btn" onclick="quickAddXP(5)">+5</button>
+                        <button class="quick-xp-btn" onclick="quickAddXP(10)">+10</button>
+                        <button class="quick-xp-btn" onclick="quickAddXP(25)">+25</button>
+                        <button class="quick-xp-btn" onclick="quickAddXP(50)">+50</button>
+                    </div>
+                </div>
+            </section>
+        </div>
 
-
-    <main>
-        <div class="category-grid">
-            {% for category in ["Red", "Blue", "Green", "Gold"] %}
-            <a href="/card_{{category|lower}}" style="text-decoration: none;">
-                <div class="card-main {{ category|lower }}">
-                    <img src="../static/images/icons/icon_{{category|lower }}.png" alt="{{ category }} Icon"
-                        class="category-icon">
-                    <div class="xp-bar-group">
+        <!-- SKILL CARDS WITH NEXT MILESTONE -->
+        <section class="skills-section">
+            <h2>🎯 Next Milestones</h2>
+            {% if streaks %}
+            {% set active_streaks = streaks|selectattr('current', '>', 0)|list %}
+            <h3 class="streaks-inline-title">🔥 Active Streaks</h3>
+            <div class="streaks-inline">
+                {% if active_streaks %}
+                    {% for streak in active_streaks[:5] %}
+                    <div class="streak-chip">
+                        <span class="streak-chip-skill">{{ streak.skill }}</span>
+                        <span class="streak-chip-count">{{ streak.current }} 🔥</span>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="streak-chip empty">No active streaks yet</div>
+                {% endif %}
+            </div>
+            {% endif %}
+            <div class="category-grid-compact">
+                {% for category in ["Red", "Blue", "Green", "Gold"] %}
+                <a href="/card_{{ category|lower }}" class="category-card-link">
+                <div class="category-card {{ category|lower }}">
+                    <h3>{{ category }}</h3>
+                    <div class="milestone-list">
                         {% for skill, cat, xp, level in stats %}
                         {% if cat == category %}
-                        <div class="skill-bar">
-                            <span>{{ skill }} (Lvl {{ level }})</span>
-                            <div class="xp-bar">
-                                <div class="fill" style="width: {{ (xp / (level * 100)) * 100 }}%"></div>
+                        {% set milestone = next_milestones.get(skill) %}
+                        {% if milestone %}
+                        <div class="milestone-item">
+                            <span class="skill-name">{{ skill }}</span>
+                            <div class="milestone-bar">
+                                <div class="milestone-fill" style="width: {{ ((milestone.xp_current / milestone.xp_needed) * 100) }}%"></div>
                             </div>
+                            <span class="milestone-text">{{ milestone.xp_remaining }} XP to lvl {{ milestone.next_level }}</span>
                         </div>
+                        {% endif %}
                         {% endif %}
                         {% endfor %}
                     </div>
                 </div>
-            </a>
-            {% endfor %}
-        </div>
-
-    </main>
+                </a>
+                {% endfor %}
+            </div>
+        </section>
+    </div>
 
     <script>
-        document.getElementById("xp-form").addEventListener("submit", async function (e) {
-            e.preventDefault();
-            const amount = document.getElementById("xp-amount").value;
-            const skill = document.getElementById("skill-select").value;
-
-            const response = await fetch("/add_xp", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({ skill: skill, xp: amount })
+        // Update time and date
+        function updateTime() {
+            const now = new Date();
+            document.getElementById('current-time').textContent = now.toLocaleTimeString('en-US', { 
+                hour: '2-digit', 
+                minute: '2-digit',
+                hour12: true 
             });
+            document.getElementById('current-date').textContent = now.toLocaleDateString('en-US');
+        }
+        updateTime();
+        setInterval(updateTime, 1000);
 
-            if (response.ok) {
-                location.reload();
-            } else {
-                alert("Failed to add XP");
-            }
+        // Dark mode toggle
+        const darkModeBtn = document.getElementById('dark-mode-btn');
+        const body = document.getElementById('body');
+        
+        // Check for saved dark mode preference
+        if (localStorage.getItem('darkMode') === 'true') {
+            body.classList.add('dark-mode');
+            darkModeBtn.textContent = '☀️';
+        }
+        
+        darkModeBtn.addEventListener('click', function() {
+            body.classList.toggle('dark-mode');
+            const isDark = body.classList.contains('dark-mode');
+            localStorage.setItem('darkMode', isDark);
+            darkModeBtn.textContent = isDark ? '☀️' : '🌙';
         });
 
-        document.getElementById("xp-delete-form").addEventListener("submit", async function (e) {
-            e.preventDefault();
-            const amount = document.getElementById("xp-delete-amount").value;
-            const skill = document.getElementById("skill-delete-select").value;
-
-            const response = await fetch("/delete_xp", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({ skill: skill, xp: amount })
-            });
-
-            if (response.ok) {
-                location.reload();
-            } else {
-                alert("Failed to delete XP");
-            }
-        });
-
-
+        // Toggle challenge completion - NO PAGE RELOAD
         function toggleComplete(button, newStatus) {
-                const challengeName = button.getAttribute("data-challenge");
-
-                fetch("/daily_challenges", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ challenge: challengeName, completed: newStatus })
-                })
-                    .then(response => {
-                        if (response.ok) {
-                            location.reload();
+            const challengeName = button.getAttribute("data-challenge");
+            const challengeItem = button.closest('.challenge-item');
+            
+            fetch("/daily_challenges", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ challenge: challengeName, completed: newStatus })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Update UI without reload
+                        if (newStatus) {
+                            challengeItem.classList.add('completed');
+                            button.classList.remove('pending');
+                            button.classList.add('done');
+                            button.textContent = '✅ Done';
+                            button.setAttribute('onclick', `toggleComplete(this, 0)`);
                         } else {
-                            alert("Failed to update challenge.");
+                            challengeItem.classList.remove('completed');
+                            button.classList.remove('done');
+                            button.classList.add('pending');
+                            button.textContent = '⭕ Do it';
+                            button.setAttribute('onclick', `toggleComplete(this, 1)`);
                         }
-                    })
-                    .catch(err => console.error(err));
+                        
+                        // Update daily stats with accurate count from server
+                        updateDailyStats();
+                    } else {
+                        alert("Failed to update challenge.");
+                    }
+                })
+                .catch(err => {
+                    console.error(err);
+                    alert("Failed to update challenge.");
+                });
+        }
+
+        // Quick add XP - NO PAGE RELOAD
+        function quickAddXP(amount) {
+            const skill = document.getElementById('quick-skill-select').value;
+            if (!skill) {
+                alert('Please select a skill');
+                return;
             }
+
+            const button = event.target;
+            button.disabled = true;
+            button.textContent = '...';
+
+            fetch("/add_xp", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ skill: skill, xp: amount })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Update milestone display for this skill
+                        updateMilestoneDisplay(skill, data);
+                        updateDailyStats();
+                        
+                        // Show success feedback
+                        button.textContent = '✓';
+                        setTimeout(() => {
+                            button.textContent = `+${amount} XP`;
+                            button.disabled = false;
+                        }, 500);
+                        
+                        // Show level up notification if applicable
+                        if (data.leveled_up) {
+                            showLevelUpNotification(skill, data.current_level);
+                        }
+                    } else {
+                        button.textContent = '✗';
+                        setTimeout(() => {
+                            button.textContent = `+${amount} XP`;
+                            button.disabled = false;
+                        }, 500);
+                        alert("Failed to add XP");
+                    }
+                })
+                .catch(err => {
+                    console.error(err);
+                    button.textContent = `+${amount} XP`;
+                    button.disabled = false;
+                });
+        }
+
+        // Update daily stats without reload
+        function updateDailyStats() {
+            fetch("/get_daily_stats")
+                .then(response => response.json())
+                .then(data => {
+                    document.querySelector('.stat-card:nth-child(1) .stat-value').textContent = data.xp_earned;
+                    document.querySelector('.stat-card:nth-child(2) .stat-value').textContent = 
+                        `${data.challenges_completed}/{{ daily_challenges|length }}`;
+                    
+                    // Update progress bar
+                    const totalChallenges = {{ daily_challenges|length }};
+                    const percentage = (data.challenges_completed / totalChallenges) * 100;
+                    document.querySelector('.progress-fill').style.width = percentage + '%';
+                    document.querySelector('.progress-text').textContent = 
+                        `${data.challenges_completed}/${totalChallenges} completed`;
+                })
+                .catch(err => console.error(err));
+        }
+
+        // Update milestone display for a specific skill
+        function updateMilestoneDisplay(skill, data) {
+            const milestoneItems = document.querySelectorAll('.milestone-item');
+            milestoneItems.forEach(item => {
+                const skillName = item.querySelector('.skill-name');
+                if (skillName && skillName.textContent === skill) {
+                    const fillBar = item.querySelector('.milestone-fill');
+                    const milestoneText = item.querySelector('.milestone-text');
+                    
+                    if (fillBar && milestoneText) {
+                        const percentage = (data.new_xp / data.xp_for_next) * 100;
+                        fillBar.style.width = percentage + '%';
+                        milestoneText.textContent = `${data.xp_remaining} XP to lvl ${data.current_level + 1}`;
+                    }
+                }
+            });
+        }
+
+        // Show level up notification
+        function showLevelUpNotification(skill, newLevel) {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                background: linear-gradient(135deg, #667eea, #764ba2);
+                color: white;
+                padding: 30px 60px;
+                border-radius: 20px;
+                font-size: 24px;
+                font-weight: bold;
+                z-index: 10000;
+                box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+                animation: popIn 0.3s ease-out;
+            `;
+            notification.textContent = `🎉 ${skill} Level ${newLevel}! 🎉`;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.style.opacity = '0';
+                notification.style.transition = 'opacity 0.5s';
+                setTimeout(() => notification.remove(), 500);
+            }, 2000);
+        }
     </script>
 </body>
-
 </html>
 {% endblock %}

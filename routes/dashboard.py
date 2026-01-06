@@ -4,6 +4,7 @@ from utils.db import get_db_connection
 from utils.reset_challenges import reset_daily_challenges_if_needed
 from utils.card_data import TITLES, BADGES, skill_to_category, skill_order
 from utils.challenge_bank import CHALLENGE_BANK
+from utils.stats_tracker import get_daily_stats, get_streaks, get_next_milestone, get_all_milestones
 
 dashboard_bp = Blueprint("dashboard", __name__)
 
@@ -18,13 +19,28 @@ def dashboard():
     if 'user_id' not in session:
         return redirect(url_for('login.login'))
     
+    # Validate that user still exists
+    with get_db_connection() as conn:
+        c = conn.cursor()
+        c.execute("SELECT id FROM users WHERE id = %s", (session['user_id'],))
+        if not c.fetchone():
+            session.clear()
+            return redirect(url_for('login.login'))
+    
     reset_daily_challenges_if_needed() 
     user_id = session['user_id']
-    # Query skills for this user only
+    # Query skills for this user only - OPTIMIZED: Single connection for all queries
     with get_db_connection() as conn:
         c = conn.cursor()
 
-        #Make sure that skills are ordered in the same way as in the dashboard
+        # Get username
+        c.execute("SELECT username FROM users WHERE id = %s", (user_id,))
+        user_data = c.fetchone()
+        if user_data is None:
+            return redirect(url_for('login.login'))
+        username = user_data[0]
+
+        # Get skills ordered
         placeholders = ','.join(['%s'] * len(skill_order))
         c.execute(f"""
             SELECT skill, category, xp, level 
@@ -37,25 +53,18 @@ def dashboard():
         """, (user_id, *skill_order))
         stats = c.fetchall()
 
+        # Get daily challenges
         c.execute("SELECT challenge, completed FROM daily WHERE user_id = %s", (user_id,))
         daily_challenges = c.fetchall()
-        c.execute("SELECT username FROM users WHERE id = %s", (user_id,))
-        user_data = c.fetchone()
-        if user_data is None:
-            return redirect(url_for('login.login'))  # or render an error page
-        username = user_data[0]
 
-        c.execute("SELECT selected_titles FROM selected_decorations WHERE user_id = %s", (user_id,))
+        # Get selected titles and badges in one query
+        c.execute("SELECT selected_titles, selected_badges FROM selected_decorations WHERE user_id = %s", (user_id,))
         row = c.fetchone()
-        if row and row[0]:
-            selected_titles = json.loads(row[0])
+        if row:
+            selected_titles = json.loads(row[0]) if row[0] else []
+            selected_badges = json.loads(row[1]) if row[1] else []
         else:
             selected_titles = []
-        c.execute("SELECT selected_badges FROM selected_decorations WHERE user_id = %s", (user_id,))
-        row = c.fetchone()
-        if row and row[0]:
-            selected_badges = json.loads(row[0])
-        else:
             selected_badges = []
 
     title_info = {}
@@ -80,5 +89,8 @@ def dashboard():
         selected_badges=selected_badges,
         title_info=title_info,
         badge_images=badge_images,
-        skill_to_category=skill_to_category
+        skill_to_category=skill_to_category,
+        daily_stats=get_daily_stats(user_id),
+        streaks=get_streaks(user_id),
+        next_milestones=get_all_milestones(user_id)
     )

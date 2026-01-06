@@ -1,7 +1,7 @@
 from flask import Flask
 from dotenv import load_dotenv
 import os
-from utils.db import init_db
+from utils.db import init_db, create_database_if_not_exists
 
 load_dotenv()  # Load environment variables from a .env file
 
@@ -34,6 +34,7 @@ def create_app():
 
     app.secret_key = os.getenv("SECRET_KEY", "default_secret_key") 
 
+    create_database_if_not_exists()
     init_db()
 
     return app

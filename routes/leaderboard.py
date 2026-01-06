@@ -33,7 +33,7 @@ def leaderboard():
             "username": username,
             "stats": stats,
             "overall_xp": sum(xp for _, _, xp, _ in stats),
-            "overall_level": sum(level for _, _, _, level in stats) - 16 if stats else 0,
+            "overall_level": sum(level for _, _, _, level in stats) // 16 if stats else 0,
         })
 
     leaderboard_data.sort(key=lambda u: u["overall_level"], reverse=True)

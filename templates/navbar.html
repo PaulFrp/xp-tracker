@@ -1,21 +1,26 @@
 
 
 <nav class="navbar">
-    <div class="nav-links">
+    <div class="nav-brand">
         <a href="{{ url_for('dashboard.index') }}" class="nav-link nav-home">🏠 Home</a>
-        {% for category in ["Red", "Blue", "Green", "Gold"] %}
-            <a href="/card_{{ category|lower }}" class="nav-link nav-{{ category|lower }}">
-                {{ category }}
-            </a>
-        {% endfor %}
-        <a href="{{ url_for('titles.titles')}}" class="nav-link">Titles</a>
-        <a href="{{ url_for('badges.badges')}}" class="nav-link">Badges</a>
-        <a href="{{ url_for('leaderboard.leaderboard')}}" class="nav-link">Leaderboard</a>
+    </div>
+    <div class="nav-links">
+        <div class="nav-categories">
+            {% for category in ["Red", "Blue", "Green", "Gold"] %}
+                <a href="/card_{{ category|lower }}" class="nav-link nav-category nav-{{ category|lower }}">
+                    {{ category }}
+                </a>
+            {% endfor %}
+        </div>
+        <div class="nav-divider"></div>
+        <a href="{{ url_for('titles.titles')}}" class="nav-link">👑 Titles</a>
+        <a href="{{ url_for('badges.badges')}}" class="nav-link">🏆 Badges</a>
+        <a href="{{ url_for('leaderboard.leaderboard')}}" class="nav-link">📊 Leaderboard</a>
     </div>
     <div class="nav-actions">
         <form method="POST" action="{{ url_for('login.logout') }}">
             <button type="submit" class="logout-btn">
-                Logout
+                🚪 Logout
             </button>
         </form>
     </div>

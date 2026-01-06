@@ -107,8 +107,14 @@
                 <div class="quick-xp-controls">
                     <select id="quick-skill-select" class="quick-select">
                         <option value="">Select a skill...</option>
-                        {% for skill, cat, xp, level in stats %}
-                        <option value="{{ skill }}">{{ skill }} (Lvl {{ level }})</option>
+                        {% set category_emojis = {"Red": "🔴", "Blue": "🔵", "Green": "🟢", "Gold": "🟡"} %}
+                        {% for category in ["Red", "Blue", "Green", "Gold"] %}
+                            <option disabled>─── {{ category_emojis[category] }} {{ category }} ───</option>
+                            {% for skill, cat, xp, level in stats %}
+                                {% if cat == category %}
+                                <option value="{{ skill }}">  {{ skill }} (Lvl {{ level }})</option>
+                                {% endif %}
+                            {% endfor %}
                         {% endfor %}
                     </select>
                     <div class="quick-xp-buttons">

@@ -20,6 +20,7 @@ def create_app():
     from routes.leaderboard import leaderboard_bp
     from routes.challenges import challenges_bp
     from routes.profile import profile_bp
+    from routes.cooking import cooking_bp
 
     #Register blue prints
     app.register_blueprint(login_bp, url_prefix='')
@@ -31,6 +32,7 @@ def create_app():
     app.register_blueprint(leaderboard_bp, url_prefix='')
     app.register_blueprint(challenges_bp, url_prefix='')
     app.register_blueprint(profile_bp, url_prefix='/profile')
+    app.register_blueprint(cooking_bp, url_prefix='')
 
     app.secret_key = os.getenv("SECRET_KEY", "default_secret_key") 
 

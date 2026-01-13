@@ -131,6 +131,73 @@ def init_db():
                 )
             ''')
 
+            c.execute('''
+                CREATE TABLE IF NOT EXISTS recipes (
+                    id SERIAL PRIMARY KEY,
+                    user_id INTEGER NOT NULL,
+                    name TEXT NOT NULL,
+                    ingredients TEXT NOT NULL,
+                    tags TEXT NOT NULL,
+                    prep_time INTEGER,
+                    cook_time INTEGER,
+                    servings INTEGER,
+                    difficulty TEXT,
+                    calories INTEGER,
+                    cost TEXT,
+                    cuisine TEXT,
+                    instructions TEXT,
+                    notes TEXT,
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    FOREIGN KEY(user_id) REFERENCES users(id)
+                )
+            ''')
+
+            # Add missing columns to recipes table if they don't exist
+            try:
+                c.execute("ALTER TABLE recipes ADD COLUMN prep_time INTEGER")
+            except psycopg2.Error:
+                pass  # Column already exists
+
+            try:
+                c.execute("ALTER TABLE recipes ADD COLUMN cook_time INTEGER")
+            except psycopg2.Error:
+                pass
+
+            try:
+                c.execute("ALTER TABLE recipes ADD COLUMN servings INTEGER")
+            except psycopg2.Error:
+                pass
+
+            try:
+                c.execute("ALTER TABLE recipes ADD COLUMN difficulty TEXT")
+            except psycopg2.Error:
+                pass
+
+            try:
+                c.execute("ALTER TABLE recipes ADD COLUMN calories INTEGER")
+            except psycopg2.Error:
+                pass
+
+            try:
+                c.execute("ALTER TABLE recipes ADD COLUMN cost TEXT")
+            except psycopg2.Error:
+                pass
+
+            try:
+                c.execute("ALTER TABLE recipes ADD COLUMN cuisine TEXT")
+            except psycopg2.Error:
+                pass
+
+            try:
+                c.execute("ALTER TABLE recipes ADD COLUMN instructions TEXT")
+            except psycopg2.Error:
+                pass
+
+            try:
+                c.execute("ALTER TABLE recipes ADD COLUMN notes TEXT")
+            except psycopg2.Error:
+                pass
+
             # Initialize the last reset date if it doesn't exist
             c.execute("""
                 INSERT INTO config (key, value)

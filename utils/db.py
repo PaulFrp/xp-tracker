@@ -59,6 +59,7 @@ def init_db():
             c = conn.cursor()
             
             # Create tables if they don't already exist
+            print("Creating users table...")
             c.execute('''
                 CREATE TABLE IF NOT EXISTS users (
                     id SERIAL PRIMARY KEY,
@@ -67,6 +68,7 @@ def init_db():
                 )
             ''')
 
+            print("Creating progress table...")
             c.execute('''
                 CREATE TABLE IF NOT EXISTS progress (
                     id SERIAL PRIMARY KEY,
@@ -79,6 +81,7 @@ def init_db():
                 )
             ''')
 
+            print("Creating daily table...")
             c.execute('''
                 CREATE TABLE IF NOT EXISTS daily (
                     id SERIAL PRIMARY KEY,
@@ -90,6 +93,7 @@ def init_db():
                 )
             ''')
 
+            print("Creating config table...")
             c.execute('''
                 CREATE TABLE IF NOT EXISTS config (
                 key TEXT PRIMARY KEY,
@@ -97,6 +101,7 @@ def init_db():
                 )
             ''')
 
+            print("Creating selected_decorations table...")
             c.execute('''
                 CREATE TABLE IF NOT EXISTS selected_decorations (
                 user_id INTEGER PRIMARY KEY,
@@ -106,6 +111,7 @@ def init_db():
                 )
             ''')
 
+            print("Creating daily_stats table...")
             c.execute('''
                 CREATE TABLE IF NOT EXISTS daily_stats (
                     id SERIAL PRIMARY KEY,
@@ -118,6 +124,7 @@ def init_db():
                 )
             ''')
 
+            print("Creating streaks table...")
             c.execute('''
                 CREATE TABLE IF NOT EXISTS streaks (
                     id SERIAL PRIMARY KEY,
@@ -131,6 +138,7 @@ def init_db():
                 )
             ''')
 
+            print("Creating recipes table...")
             c.execute('''
                 CREATE TABLE IF NOT EXISTS recipes (
                     id SERIAL PRIMARY KEY,
@@ -153,6 +161,7 @@ def init_db():
             ''')
 
             # Add missing columns to recipes table if they don't exist
+            print("Adding missing columns to recipes table...")
             try:
                 c.execute("ALTER TABLE recipes ADD COLUMN prep_time INTEGER")
             except psycopg2.Error:
@@ -199,6 +208,7 @@ def init_db():
                 pass
 
             # Initialize the last reset date if it doesn't exist
+            print("Initializing config values...")
             c.execute("""
                 INSERT INTO config (key, value)
                 VALUES (%s, %s)
@@ -206,8 +216,11 @@ def init_db():
                 ("last_reset_date", "1970-01-01"))
             
             conn.commit()
+            print("Database initialization completed successfully")
 
             
     except Exception as e:
         # Handle any exceptions (e.g., DB already initialized or connection issues)
-        print(f"Error initializing the database: {e}")
+        import traceback
+        print(f"CRITICAL: Error initializing the database: {e}")
+        print(traceback.format_exc())

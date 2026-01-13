@@ -22,14 +22,22 @@ def get_db_connection():
 def create_database_if_not_exists():
     """Create the database if it doesn't exist"""
     result = urlparse.urlparse(os.environ.get("DATABASE_URL"))
+    # Managed providers (Heroku/RDS) don't allow creating databases; only run locally
+    if not result.hostname:
+        print("DATABASE_URL not set; skipping create_database_if_not_exists")
+        return
+
+    hostname = result.hostname
+    if hostname not in ("localhost", "127.0.0.1"):
+        print(f"Skipping create_database_if_not_exists for managed host {hostname}")
+        return
+
     username = result.username
     password = result.password
     database = result.path[1:]
-    hostname = result.hostname
     port = result.port
 
     try:
-        # Connect to the default 'postgres' database
         conn = psycopg2.connect(
             database="postgres",
             user=username,
@@ -39,15 +47,14 @@ def create_database_if_not_exists():
         )
         conn.autocommit = True
         cursor = conn.cursor()
-        
-        # Check if database exists
-        cursor.execute(f"SELECT 1 FROM pg_database WHERE datname = %s", (database,))
+
+        cursor.execute("SELECT 1 FROM pg_database WHERE datname = %s", (database,))
         exists = cursor.fetchone()
-        
+
         if not exists:
-            cursor.execute(sql.SQL("CREATE DATABASE {}").format(sql.Identifier(database)))
+            cursor.execute(sql.SQL("CREATE DATABASE {}" ).format(sql.Identifier(database)))
             print(f"Database '{database}' created successfully")
-        
+
         cursor.close()
         conn.close()
     except Exception as e:
@@ -160,52 +167,17 @@ def init_db():
                 )
             ''')
 
-            # Add missing columns to recipes table if they don't exist
+            # Add missing columns to recipes table without aborting the transaction
             print("Adding missing columns to recipes table...")
-            try:
-                c.execute("ALTER TABLE recipes ADD COLUMN prep_time INTEGER")
-            except psycopg2.Error:
-                pass  # Column already exists
-
-            try:
-                c.execute("ALTER TABLE recipes ADD COLUMN cook_time INTEGER")
-            except psycopg2.Error:
-                pass
-
-            try:
-                c.execute("ALTER TABLE recipes ADD COLUMN servings INTEGER")
-            except psycopg2.Error:
-                pass
-
-            try:
-                c.execute("ALTER TABLE recipes ADD COLUMN difficulty TEXT")
-            except psycopg2.Error:
-                pass
-
-            try:
-                c.execute("ALTER TABLE recipes ADD COLUMN calories INTEGER")
-            except psycopg2.Error:
-                pass
-
-            try:
-                c.execute("ALTER TABLE recipes ADD COLUMN cost TEXT")
-            except psycopg2.Error:
-                pass
-
-            try:
-                c.execute("ALTER TABLE recipes ADD COLUMN cuisine TEXT")
-            except psycopg2.Error:
-                pass
-
-            try:
-                c.execute("ALTER TABLE recipes ADD COLUMN instructions TEXT")
-            except psycopg2.Error:
-                pass
-
-            try:
-                c.execute("ALTER TABLE recipes ADD COLUMN notes TEXT")
-            except psycopg2.Error:
-                pass
+            c.execute("ALTER TABLE IF EXISTS recipes ADD COLUMN IF NOT EXISTS prep_time INTEGER")
+            c.execute("ALTER TABLE IF EXISTS recipes ADD COLUMN IF NOT EXISTS cook_time INTEGER")
+            c.execute("ALTER TABLE IF EXISTS recipes ADD COLUMN IF NOT EXISTS servings INTEGER")
+            c.execute("ALTER TABLE IF EXISTS recipes ADD COLUMN IF NOT EXISTS difficulty TEXT")
+            c.execute("ALTER TABLE IF EXISTS recipes ADD COLUMN IF NOT EXISTS calories INTEGER")
+            c.execute("ALTER TABLE IF EXISTS recipes ADD COLUMN IF NOT EXISTS cost TEXT")
+            c.execute("ALTER TABLE IF EXISTS recipes ADD COLUMN IF NOT EXISTS cuisine TEXT")
+            c.execute("ALTER TABLE IF EXISTS recipes ADD COLUMN IF NOT EXISTS instructions TEXT")
+            c.execute("ALTER TABLE IF EXISTS recipes ADD COLUMN IF NOT EXISTS notes TEXT")
 
             # Initialize the last reset date if it doesn't exist
             print("Initializing config values...")

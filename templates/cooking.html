@@ -6,14 +6,45 @@
 {% include "navbar.html" %}
 
 <div class="cooking-container">
-    <h1>🍳 My Recipes</h1>
+    <h1>🍳 {{ owner_username }}'s Recipes</h1>
+
+    <div class="drive-toolbar">
+        <div class="drive-switcher">
+            <label for="driveSelector">Drive:</label>
+            <select id="driveSelector">
+                {% for drive in accessible_drives %}
+                    <option value="{{ drive.username }}" {% if drive.username == owner_username %}selected{% endif %}>
+                        {{ drive.username }}{% if drive.id == session.get('user_id') %} (You){% endif %}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+        {% if not is_owner %}
+            <div class="shared-drive-note">Shared drive access enabled</div>
+        {% endif %}
+    </div>
+
+    {% if is_owner %}
+    <div class="share-drive-card">
+        <h2>Share This Drive</h2>
+        <form id="shareDriveForm" class="share-drive-form">
+            <input type="text" id="shareUsername" placeholder="Enter username" required>
+            <button type="submit" class="btn-secondary">Share (Edit)</button>
+        </form>
+        <div id="shareMessage" class="share-message"></div>
+        <div id="shareList" class="share-list"></div>
+    </div>
+    {% endif %}
     
     <!-- Add Recipe Button -->
+    {% if can_edit %}
     <div class="add-recipe-section">
         <button id="toggleAddRecipeBtn" class="btn-add-recipe">➕ Add New Recipe</button>
     </div>
+    {% endif %}
     
     <!-- Add Recipe Form (Hidden by default) -->
+    {% if can_edit %}
     <div id="addRecipeFormContainer" class="recipe-form-card" style="display: none;">
         <h2>Add New Recipe</h2>
         <form id="addRecipeForm">
@@ -108,15 +139,17 @@
             <button type="submit" class="btn-primary">Save Recipe</button>
         </form>
     </div>
+    {% endif %}
     
     <!-- Search and Filter Section -->
     <div class="search-filter-section">
         <div class="search-box">
             <form method="GET" action="{{ url_for('cooking.cooking') }}" class="search-form" id="searchFilterForm">
+                <input type="hidden" name="owner" value="{{ owner_username }}">
                 <input type="text" name="search" placeholder="Search recipes or ingredients..." value="{{ search_query }}">
                 <button type="submit">🔍 Search</button>
                 {% if search_query or current_tag or selected_difficulty or selected_time %}
-                    <a href="{{ url_for('cooking.cooking') }}" class="btn-clear">Clear All</a>
+                    <a href="{{ url_for('cooking.cooking', owner=owner_username) }}" class="btn-clear">Clear All</a>
                 {% endif %}
             </form>
         </div>
@@ -131,7 +164,7 @@
                         <div class="tag-suggestions-dropdown" id="tagSuggestions"></div>
                     </div>
                     <div class="selected-tags-container" id="selectedTagsContainer"></div>
-                    <a href="{{ url_for('cooking.cooking') }}" class="clear-tag-filters" id="clearTagsBtn" style="display: none;">Clear all tags</a>
+                    <a href="{{ url_for('cooking.cooking', owner=owner_username) }}" class="clear-tag-filters" id="clearTagsBtn" style="display: none;">Clear all tags</a>
                 {% else %}
                     <p class="no-filters">No tags yet</p>
                 {% endif %}
@@ -169,13 +202,20 @@
                     <div class="recipe-header">
                         <h3>{{ recipe.name }}</h3>
                         <div class="recipe-actions" onclick="event.stopPropagation();">
+                            {% if can_edit %}
                             <button class="btn-edit" title="Edit">✏️</button>
+                            {% endif %}
+                            {% if can_edit %}
                             <button class="btn-delete" title="Delete">🗑️</button>
+                            {% endif %}
                         </div>
                     </div>
                     
                     <div class="recipe-content">
                         <div class="recipe-summary">
+                            {% if recipe.created_by_username %}
+                                <span class="summary-item">👤 Made by {{ recipe.created_by_username }}</span>
+                            {% endif %}
                             {% if recipe.total_time %}
                                 <span class="summary-item">⏱️ {{ recipe.total_time }} min</span>
                             {% endif %}
@@ -328,6 +368,84 @@
     text-align: center;
     margin-bottom: 30px;
     font-size: 2.5em;
+}
+
+.drive-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.drive-switcher {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.drive-switcher select {
+    padding: 8px 10px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+}
+
+.shared-drive-note {
+    font-size: 0.9em;
+    color: #666;
+    background: #f1f3f5;
+    border: 1px solid #e5e7eb;
+    border-radius: 6px;
+    padding: 6px 10px;
+}
+
+.share-drive-card {
+    background: #f9f9f9;
+    border: 2px solid #ddd;
+    border-radius: 10px;
+    padding: 18px;
+    margin-bottom: 24px;
+}
+
+.share-drive-card h2 {
+    margin: 0 0 12px 0;
+    font-size: 1.3em;
+}
+
+.share-drive-form {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.share-drive-form input {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+.share-message {
+    min-height: 20px;
+    font-size: 0.95em;
+    margin-bottom: 10px;
+}
+
+.share-message.error {
+    color: #b42318;
+}
+
+.share-message.success {
+    color: #027a48;
+}
+
+.share-list-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 8px 0;
+    border-top: 1px solid #ececec;
 }
 
 .add-recipe-section {
@@ -1142,6 +1260,15 @@
 }
 
 @media (max-width: 600px) {
+    .drive-toolbar {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .share-drive-form {
+        flex-direction: column;
+    }
+
     .recipes-grid {
         grid-template-columns: 1fr;
     }
@@ -1239,12 +1366,19 @@
 
 <script>
 const PREDEFINED_TAGS = {{ predefined_tags|tojson }};
+const OWNER_USERNAME = {{ owner_username|tojson }};
+const OWNER_USER_ID = {{ owner_user_id|tojson }};
+const CAN_EDIT = {{ can_edit|tojson }};
+const IS_OWNER = {{ is_owner|tojson }};
 let currentEditingRecipeId = null;
 
 // Add Ingredient Input
-document.getElementById('addIngredientBtn').addEventListener('click', function() {
-    addIngredientInput('ingredientsList');
-});
+const addIngredientBtn = document.getElementById('addIngredientBtn');
+if (addIngredientBtn) {
+    addIngredientBtn.addEventListener('click', function() {
+        addIngredientInput('ingredientsList');
+    });
+}
 
 function addIngredientInput(listId) {
     const ingredientsList = document.getElementById(listId);
@@ -1356,6 +1490,9 @@ function displayRecipeDetail(recipe) {
     if (recipe.total_time) {
         metadata += `<div class="metadata-item"><div class="metadata-label">Total Time</div><div class="metadata-value">${recipe.total_time} min</div></div>`;
     }
+    if (recipe.created_by_username) {
+        metadata += `<div class="metadata-item"><div class="metadata-label">Made By</div><div class="metadata-value">${recipe.created_by_username}</div></div>`;
+    }
     if (recipe.servings) {
         metadata += `<div class="metadata-item"><div class="metadata-label">Servings</div><div class="metadata-value">${recipe.servings}</div></div>`;
     }
@@ -1397,13 +1534,20 @@ function displayRecipeDetail(recipe) {
     }
     
     // Combine all content with two-column layout
+    const detailActions = [];
+    if (recipe.can_edit) {
+        detailActions.push(`<button class="btn-edit-detail" data-recipe-id="${recipe.id}">Edit</button>`);
+    }
+    if (recipe.can_delete) {
+        detailActions.push(`<button class="btn-delete-detail" data-recipe-id="${recipe.id}">Delete</button>`);
+    }
+
     content.innerHTML = `
         <div class="recipe-detail-header">
             <span class="close">&times;</span>
             <h2>${recipe.name}</h2>
             <div class="recipe-detail-actions" onclick="event.stopPropagation();">
-                <button class="btn-edit-detail" data-recipe-id="${recipe.id}">Edit</button>
-                <button class="btn-delete-detail" data-recipe-id="${recipe.id}">Delete</button>
+                ${detailActions.join('')}
             </div>
         </div>
         
@@ -1439,8 +1583,11 @@ function displayRecipeDetail(recipe) {
             
             // Find the recipe card and trigger edit
             const recipeCard = document.querySelector(`[data-recipe-id="${recipeId}"]`);
-            const editBtn = recipeCard.querySelector('.btn-edit');
-            editBtn.click();
+            if (!recipeCard) return;
+            const cardEditBtn = recipeCard.querySelector('.btn-edit');
+            if (cardEditBtn) {
+                cardEditBtn.click();
+            }
         });
     }
     
@@ -1451,8 +1598,11 @@ function displayRecipeDetail(recipe) {
             
             // Find the recipe card and trigger delete
             const recipeCard = document.querySelector(`[data-recipe-id="${recipeId}"]`);
-            const deleteBtn = recipeCard.querySelector('.btn-delete');
-            deleteBtn.click();
+            if (!recipeCard) return;
+            const cardDeleteBtn = recipeCard.querySelector('.btn-delete');
+            if (cardDeleteBtn) {
+                cardDeleteBtn.click();
+            }
         });
     }
     
@@ -1465,6 +1615,115 @@ function displayRecipeDetail(recipe) {
 
 // Initialize on page load
 document.addEventListener('DOMContentLoaded', function() {
+    const driveSelector = document.getElementById('driveSelector');
+    if (driveSelector) {
+        driveSelector.addEventListener('change', function() {
+            const selectedOwner = this.value;
+            window.location.href = `{{ url_for("cooking.cooking") }}?owner=${encodeURIComponent(selectedOwner)}`;
+        });
+    }
+
+    if (IS_OWNER) {
+        const shareForm = document.getElementById('shareDriveForm');
+        const shareList = document.getElementById('shareList');
+        const shareMessage = document.getElementById('shareMessage');
+
+        const renderMessage = (message, isError = false) => {
+            if (!shareMessage) return;
+            shareMessage.textContent = message;
+            shareMessage.classList.remove('error', 'success');
+            shareMessage.classList.add(isError ? 'error' : 'success');
+        };
+
+        const loadShares = async () => {
+            if (!shareList) return;
+            try {
+                const response = await fetch('{{ url_for("cooking.list_cooking_shares") }}');
+                const data = await response.json();
+                if (!response.ok || !data.shares) {
+                    shareList.innerHTML = '<p>Unable to load shared users.</p>';
+                    return;
+                }
+
+                if (data.shares.length === 0) {
+                    shareList.innerHTML = '<p>No shared users yet.</p>';
+                    return;
+                }
+
+                shareList.innerHTML = data.shares.map((share) => `
+                    <div class="share-list-item">
+                        <span>${share.username} (${share.permission})</span>
+                        <button type="button" class="btn-remove-ingredient revoke-share-btn" data-user-id="${share.viewer_user_id}">Revoke</button>
+                    </div>
+                `).join('');
+
+                shareList.querySelectorAll('.revoke-share-btn').forEach((button) => {
+                    button.addEventListener('click', async function() {
+                        const viewerUserId = this.dataset.userId;
+                        try {
+                            const revokeResponse = await fetch(`{{ url_for('cooking.revoke_cooking_share', viewer_user_id=0) }}`.replace('0', viewerUserId), {
+                                method: 'DELETE'
+                            });
+                            if (!revokeResponse.ok) {
+                                const revokeData = await revokeResponse.json();
+                                renderMessage(revokeData.message || 'Failed to revoke access', true);
+                                return;
+                            }
+                            renderMessage('Access revoked');
+                            loadShares();
+                        } catch (error) {
+                            console.error('Error revoking share:', error);
+                            renderMessage('Error revoking access', true);
+                        }
+                    });
+                });
+            } catch (error) {
+                console.error('Error loading shares:', error);
+                shareList.innerHTML = '<p>Unable to load shared users.</p>';
+            }
+        };
+
+        if (shareForm) {
+            shareForm.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                const usernameInput = document.getElementById('shareUsername');
+                const username = (usernameInput?.value || '').trim();
+                if (!username) {
+                    renderMessage('Username is required', true);
+                    return;
+                }
+
+                try {
+                    const response = await fetch('{{ url_for("cooking.share_cooking_drive") }}', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            username: username,
+                            permission: 'edit'
+                        })
+                    });
+
+                    const data = await response.json();
+                    if (!response.ok) {
+                        renderMessage(data.message || 'Failed to share drive', true);
+                        return;
+                    }
+
+                    renderMessage(`Shared with ${data.shared_with} (edit)`);
+                    if (usernameInput) usernameInput.value = '';
+                    loadShares();
+                } catch (error) {
+                    console.error('Error sharing drive:', error);
+                    renderMessage('Error sharing drive', true);
+                }
+            });
+        }
+
+        loadShares();
+    }
+
     // Toggle add recipe form visibility
     const toggleBtn = document.getElementById('toggleAddRecipeBtn');
     const formContainer = document.getElementById('addRecipeFormContainer');
@@ -1501,7 +1760,9 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 // Add Recipe Form Submit
-document.getElementById('addRecipeForm').addEventListener('submit', async function(e) {
+const addRecipeForm = document.getElementById('addRecipeForm');
+if (addRecipeForm) {
+addRecipeForm.addEventListener('submit', async function(e) {
     e.preventDefault();
     
     const name = document.getElementById('recipeName').value.trim();
@@ -1552,6 +1813,7 @@ document.getElementById('addRecipeForm').addEventListener('submit', async functi
             },
             body: JSON.stringify({
                 name: name,
+                owner_user_id: OWNER_USER_ID,
                 ingredients: ingredients,
                 tags: tags,
                 prep_time: prepTime ? parseInt(prepTime) : null,
@@ -1577,6 +1839,7 @@ document.getElementById('addRecipeForm').addEventListener('submit', async functi
         alert('Error adding recipe');
     }
 });
+}
 
 // Delete Recipe
 document.querySelectorAll('.btn-delete').forEach(btn => {
@@ -1681,9 +1944,12 @@ document.querySelectorAll('.btn-edit').forEach(btn => {
 });
 
 // Edit Add Ingredient
-document.getElementById('addEditIngredientBtn').addEventListener('click', function() {
-    addIngredientInput('editIngredientsList');
-});
+const addEditIngredientBtn = document.getElementById('addEditIngredientBtn');
+if (addEditIngredientBtn) {
+    addEditIngredientBtn.addEventListener('click', function() {
+        addIngredientInput('editIngredientsList');
+    });
+}
 
 // Modal Close
 document.querySelector('.close').addEventListener('click', function() {

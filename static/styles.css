@@ -1792,6 +1792,80 @@ body.dark-mode .streak-chip.empty {
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }
 
+@media (max-width: 768px) {
+    .navbar {
+        padding: 10px 12px;
+        flex-wrap: wrap;
+        gap: 8px;
+        align-items: center;
+    }
+
+    .nav-brand {
+        margin-right: 0;
+    }
+
+    .navbar .nav-links {
+        order: 3;
+        width: 100%;
+        flex: none;
+        display: flex;
+        flex-direction: row !important;
+        flex-wrap: nowrap;
+        gap: 8px;
+        overflow-x: auto;
+        overflow-y: hidden;
+        white-space: nowrap;
+        padding-bottom: 4px;
+        margin-bottom: 0;
+    }
+
+    .navbar .nav-categories {
+        display: flex;
+        flex-wrap: nowrap;
+        margin-right: 0;
+    }
+
+    .navbar .nav-divider {
+        display: none;
+    }
+
+    .navbar .nav-link {
+        padding: 6px 10px;
+        font-size: 0.85em;
+        flex: 0 0 auto;
+    }
+
+    .navbar .nav-category {
+        padding: 4px 8px;
+        font-size: 0.78em;
+    }
+
+    .nav-actions {
+        margin-left: auto;
+    }
+
+    .logout-btn {
+        padding: 6px 10px;
+        font-size: 0.82em;
+    }
+}
+
+@media (max-width: 480px) {
+    .navbar .nav-link {
+        padding: 6px 8px;
+        font-size: 0.8em;
+    }
+
+    .navbar .nav-home {
+        font-size: 0.95em;
+    }
+
+    .logout-btn {
+        padding: 6px 9px;
+        font-size: 0.78em;
+    }
+}
+
 /* Dark mode navbar */
 body.dark-mode .navbar {
     background: linear-gradient(135deg, #2d3561 0%, #3a2a5e 100%);

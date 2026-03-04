@@ -150,6 +150,7 @@ def init_db():
                 CREATE TABLE IF NOT EXISTS recipes (
                     id SERIAL PRIMARY KEY,
                     user_id INTEGER NOT NULL,
+                    created_by_user_id INTEGER,
                     name TEXT NOT NULL,
                     ingredients TEXT NOT NULL,
                     tags TEXT NOT NULL,
@@ -163,7 +164,24 @@ def init_db():
                     instructions TEXT,
                     notes TEXT,
                     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                    FOREIGN KEY(user_id) REFERENCES users(id)
+                    FOREIGN KEY(user_id) REFERENCES users(id),
+                    FOREIGN KEY(created_by_user_id) REFERENCES users(id) ON DELETE SET NULL
+                )
+            ''')
+
+            print("Creating cooking_access table...")
+            c.execute('''
+                CREATE TABLE IF NOT EXISTS cooking_access (
+                    id SERIAL PRIMARY KEY,
+                    owner_user_id INTEGER NOT NULL,
+                    viewer_user_id INTEGER NOT NULL,
+                    permission TEXT NOT NULL DEFAULT 'edit',
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    UNIQUE(owner_user_id, viewer_user_id),
+                    CHECK (permission IN ('view', 'edit')),
+                    FOREIGN KEY(owner_user_id) REFERENCES users(id) ON DELETE CASCADE,
+                    FOREIGN KEY(viewer_user_id) REFERENCES users(id) ON DELETE CASCADE
                 )
             ''')
 
@@ -178,6 +196,10 @@ def init_db():
             c.execute("ALTER TABLE IF EXISTS recipes ADD COLUMN IF NOT EXISTS cuisine TEXT")
             c.execute("ALTER TABLE IF EXISTS recipes ADD COLUMN IF NOT EXISTS instructions TEXT")
             c.execute("ALTER TABLE IF EXISTS recipes ADD COLUMN IF NOT EXISTS notes TEXT")
+            c.execute("ALTER TABLE IF EXISTS recipes ADD COLUMN IF NOT EXISTS created_by_user_id INTEGER")
+
+            # Backfill older recipes so creator displays correctly
+            c.execute("UPDATE recipes SET created_by_user_id = user_id WHERE created_by_user_id IS NULL")
 
             # Initialize the last reset date if it doesn't exist
             print("Initializing config values...")

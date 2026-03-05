@@ -76,6 +76,7 @@ def cooking():
         filter_tags = request.args.getlist('tag')  # Get all tag filters
         filter_difficulty = request.args.get('difficulty', '')
         filter_time = request.args.get('time', '')
+        filter_cost = request.args.get('cost', '')
         
         with get_db_connection() as conn:
             c = conn.cursor()
@@ -157,6 +158,10 @@ def cooking():
                     continue
                 elif filter_time == 'long' and total_time <= 60:
                     continue
+
+            # Apply cost/price filter
+            if filter_cost and cost != filter_cost:
+                continue
             
             processed_recipes.append({
                 'id': recipe_id,
@@ -186,6 +191,7 @@ def cooking():
             search_query=search_query,
             selected_difficulty=filter_difficulty,
             selected_time=filter_time,
+            selected_cost=filter_cost,
             predefined_tags=PREDEFINED_TAGS,
             owner_user_id=owner_id,
             owner_username=owner_username,

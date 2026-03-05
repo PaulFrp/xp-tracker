@@ -61,6 +61,7 @@
                             <div class="ingredient-input-group">
                                 <input type="text" class="ingredient-input" placeholder="Ingredient name">
                                 <input type="text" class="ingredient-amount" placeholder="Amount (e.g., 2 cups)">
+                                <button type="button" class="btn-remove-ingredient btn-remove-placeholder" aria-hidden="true" tabindex="-1" disabled>Remove</button>
                             </div>
                         </div>
                         <button type="button" id="addIngredientBtn" class="btn-secondary">+ Add Ingredient</button>
@@ -148,7 +149,7 @@
                 <input type="hidden" name="owner" value="{{ owner_username }}">
                 <input type="text" name="search" placeholder="Search recipes or ingredients..." value="{{ search_query }}">
                 <button type="submit">🔍 Search</button>
-                {% if search_query or current_tag or selected_difficulty or selected_time %}
+                {% if search_query or current_tag or selected_difficulty or selected_time or selected_cost %}
                     <a href="{{ url_for('cooking.cooking', owner=owner_username) }}" class="btn-clear">Clear All</a>
                 {% endif %}
             </form>
@@ -189,6 +190,17 @@
                     <button class="filter-btn {% if selected_time == 'quick' %}active{% endif %}" data-filter-type="time" data-filter-value="quick">Quick (≤30 min)</button>
                     <button class="filter-btn {% if selected_time == 'medium' %}active{% endif %}" data-filter-type="time" data-filter-value="medium">Medium (31-60 min)</button>
                     <button class="filter-btn {% if selected_time == 'long' %}active{% endif %}" data-filter-type="time" data-filter-value="long">Long (>60 min)</button>
+                </div>
+            </div>
+
+            <!-- Price Filter -->
+            <div class="filter-group">
+                <div class="filter-label">💰 Price</div>
+                <div class="filter-options cost-filter">
+                    <button class="filter-btn {% if not selected_cost %}active{% endif %}" data-filter-type="cost" data-filter-value="">All</button>
+                    <button class="filter-btn {% if selected_cost == 'Cheap' %}active{% endif %}" data-filter-type="cost" data-filter-value="Cheap">Cheap</button>
+                    <button class="filter-btn {% if selected_cost == 'Moderate' %}active{% endif %}" data-filter-type="cost" data-filter-value="Moderate">Moderate</button>
+                    <button class="filter-btn {% if selected_cost == 'Expensive' %}active{% endif %}" data-filter-type="cost" data-filter-value="Expensive">Expensive</button>
                 </div>
             </div>
         </div>
@@ -261,7 +273,7 @@
             {% endfor %}
         {% else %}
             <div class="no-recipes">
-                <p>No recipes found. {% if search_query or current_tag %}Try adjusting your search or filters.{% else %}Start by adding your first recipe!{% endif %}</p>
+                <p>No recipes found. {% if search_query or current_tag or selected_difficulty or selected_time or selected_cost %}Try adjusting your search or filters.{% else %}Start by adding your first recipe!{% endif %}</p>
             </div>
         {% endif %}
     </div>
@@ -576,6 +588,11 @@
 
 .btn-remove-ingredient:hover {
     background-color: #ff5252;
+}
+
+.btn-remove-placeholder {
+    visibility: hidden;
+    pointer-events: none;
 }
 
 .tags-selection {
@@ -1395,6 +1412,37 @@ function addIngredientInput(listId) {
     });
 }
 
+function focusNextField(form, currentElement) {
+    const focusableFields = Array.from(
+        form.querySelectorAll('input:not([type="hidden"]):not([disabled]), select:not([disabled]), textarea:not([disabled])')
+    );
+    const currentIndex = focusableFields.indexOf(currentElement);
+    if (currentIndex >= 0 && currentIndex < focusableFields.length - 1) {
+        focusableFields[currentIndex + 1].focus();
+    }
+}
+
+function enableEnterToAdvance(formId) {
+    const form = document.getElementById(formId);
+    if (!form) return;
+
+    form.addEventListener('keydown', function(e) {
+        if (e.key !== 'Enter' || e.shiftKey || e.ctrlKey || e.metaKey || e.altKey) {
+            return;
+        }
+
+        const target = e.target;
+        if (target.tagName === 'TEXTAREA') {
+            return;
+        }
+
+        if (target.matches('input, select')) {
+            e.preventDefault();
+            focusNextField(form, target);
+        }
+    });
+}
+
 // Remove Ingredient (initial)
 document.querySelectorAll('.btn-remove-ingredient').forEach(btn => {
     btn.addEventListener('click', function() {
@@ -1407,25 +1455,33 @@ function initializeTagButtons(containerSelector) {
     document.querySelectorAll(containerSelector + ' .tag-button').forEach(button => {
         const tagName = button.getAttribute('data-tag');
         const fadedColor = TAG_COLORS[tagName] || '#ddd';
-        button.style.backgroundColor = fadedColor;
-        button.style.color = '#333';
-        button.style.borderColor = fadedColor;
-        
+        const brightColor = BRIGHT_TAG_COLORS[tagName] || '#999';
+
+        const applyTagStyle = (isSelected) => {
+            if (isSelected) {
+                button.style.backgroundColor = brightColor;
+                button.style.color = 'white';
+                button.style.borderColor = brightColor;
+            } else {
+                button.style.backgroundColor = fadedColor;
+                button.style.color = '#333';
+                button.style.borderColor = fadedColor;
+            }
+        };
+
+        applyTagStyle(button.classList.contains('selected'));
+
+        if (button.dataset.tagInitialized === 'true') {
+            return;
+        }
+
         button.addEventListener('click', function(e) {
             e.preventDefault();
             const isSelected = this.classList.toggle('selected');
-            const brightColor = BRIGHT_TAG_COLORS[tagName] || '#999';
-            
-            if (isSelected) {
-                this.style.backgroundColor = brightColor;
-                this.style.color = 'white';
-                this.style.borderColor = brightColor;
-            } else {
-                this.style.backgroundColor = fadedColor;
-                this.style.color = '#333';
-                this.style.borderColor = fadedColor;
-            }
+            applyTagStyle(isSelected);
         });
+
+        button.dataset.tagInitialized = 'true';
     });
 }
 
@@ -1738,6 +1794,8 @@ document.addEventListener('DOMContentLoaded', function() {
     
     initializeTagButtons('#addRecipeForm .tags-selection');
     colorizeRecipeTags();
+    enableEnterToAdvance('addRecipeForm');
+    enableEnterToAdvance('editRecipeForm');
     
     // Add click handlers to recipe cards
     document.querySelectorAll('.recipe-card.clickable').forEach(card => {
@@ -1926,14 +1984,11 @@ document.querySelectorAll('.btn-edit').forEach(btn => {
                 if (recipe.tags && recipe.tags.includes(tag)) {
                     button.classList.add('selected');
                 }
-                
-                button.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    this.classList.toggle('selected');
-                });
-                
+
                 editTagsSelection.appendChild(button);
             });
+
+            initializeTagButtons('#editTagsSelection');
             
             document.getElementById('editModal').style.display = 'block';
         } catch (error) {
@@ -2192,6 +2247,12 @@ function updateTagFilters() {
     if (time) {
         params.append('time', time);
     }
+
+    // Preserve cost/price
+    const cost = urlParams.get('cost');
+    if (cost) {
+        params.append('cost', cost);
+    }
     
     // Preserve search
     const search = urlParams.get('search');
@@ -2199,7 +2260,7 @@ function updateTagFilters() {
         params.append('search', search);
     }
     
-    if (selectedTags.length === 0 && !difficulty && !time && !search) {
+    if (selectedTags.length === 0 && !difficulty && !time && !cost && !search) {
         window.location.href = '{{ url_for("cooking.cooking") }}';
     } else {
         window.location.href = '{{ url_for("cooking.cooking") }}?' + params.toString();
@@ -2239,6 +2300,12 @@ function buildFilterURL() {
     const timeParams = urlParams.get('time');
     if (timeParams) {
         params.append('time', timeParams);
+    }
+
+    // Add cost
+    const costParams = urlParams.get('cost');
+    if (costParams) {
+        params.append('cost', costParams);
     }
     
     return params;

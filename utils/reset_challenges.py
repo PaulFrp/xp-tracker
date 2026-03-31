@@ -1,7 +1,13 @@
 from datetime import datetime
-import random
 from utils.db import get_db_connection
-from utils.challenge_bank import CHALLENGE_BANK  # your challenge bank dict
+
+# Keep challenge bank untouched: daily reset always restores this fixed set.
+FIXED_DAILY_CHALLENGES = [
+    "50 sit ups",
+    "50 push ups",
+    "50 squats",
+    "5km run",
+]
 
 def reset_daily_challenges_if_needed():
     try:
@@ -26,8 +32,8 @@ def reset_daily_challenges_if_needed():
             if current_date != last_reset_date:
                 print(f"Resetting daily challenges: {last_reset_date} -> {current_date}")
 
-                # Pick 4 random challenges from the bank
-                daily_choices = random.sample(list(CHALLENGE_BANK.keys()), 4)
+                # Always assign the same 4 daily challenges.
+                daily_choices = FIXED_DAILY_CHALLENGES
 
                 # Clear old challenges
                 c.execute("DELETE FROM daily")

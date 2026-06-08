@@ -2141,3 +2141,56 @@ body.dark-mode label {
         padding: 14px;
     }
 }
+
+.chart-controls {
+    margin-bottom: 14px;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.chart-controls select {
+    padding: 8px 10px;
+    border: 1px solid #cbd6d0;
+    border-radius: 8px;
+    background: #fff;
+}
+
+.chart-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+}
+
+.chart-card {
+    background: #f8fbf9;
+    border: 1px solid #e2ebe5;
+    border-radius: 10px;
+    padding: 12px;
+    min-height: 240px;
+}
+
+.chart-card h3 {
+    margin: 0 0 8px 0;
+    font-size: 1rem;
+    color: #2a4134;
+}
+
+.chart-card-full {
+    grid-column: 1 / -1;
+}
+
+.chart-card canvas {
+    width: 100% !important;
+    height: 190px !important;
+}
+
+@media (max-width: 900px) {
+    .chart-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .chart-card-full {
+        grid-column: auto;
+    }
+}

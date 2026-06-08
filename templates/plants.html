@@ -7,14 +7,7 @@
     <div class="plants-container">
         <div class="plants-header">
             <h1>Plant Tracker</h1>
-            <p>Live readings from your ESP32 moisture sensors.</p>
-        </div>
-
-        <div class="api-help-box">
-            <h2>ESP32 API Target</h2>
-            <p><strong>POST</strong> /api/sensor</p>
-            <p>Headers: Content-Type: application/json and x-api-key: your PLANT_API_KEY</p>
-            <p>Body fields: device_id, moisture, temperature (optional), humidity (optional)</p>
+            <p>Live readings from ESP32 sensors.</p>
         </div>
 
         <section class="plants-grid">
@@ -50,6 +43,16 @@
                             {% endif %}
                         </strong>
                     </div>
+                    <div class="plant-metric-row">
+                        <span>Lux</span>
+                        <strong>
+                            {% if plant.lux is not none %}
+                                {{ '%.1f'|format(plant.lux) }} lx
+                            {% else %}
+                                n/a
+                            {% endif %}
+                        </strong>
+                    </div>
 
                     <div class="plant-status {% if plant.needs_water %}warn{% else %}ok{% endif %}">
                         {% if plant.needs_water %}
@@ -71,6 +74,37 @@
             {% endif %}
         </section>
 
+        <section class="plants-history charts-section">
+            <h2>Overtime Sketches</h2>
+            {% if chart_data %}
+            <div class="chart-controls">
+                <label for="chart-device-select">Device</label>
+                <select id="chart-device-select">
+                    {% for device_id in chart_data.keys() %}
+                    <option value="{{ device_id }}">{{ device_id }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="chart-grid">
+                <div class="chart-card">
+                    <h3>Moisture (%)</h3>
+                    <canvas id="moistureChart"></canvas>
+                </div>
+                <div class="chart-card">
+                    <h3>Humidity (%)</h3>
+                    <canvas id="humidityChart"></canvas>
+                </div>
+                <div class="chart-card chart-card-full">
+                    <h3>Lux (lx)</h3>
+                    <canvas id="luxChart"></canvas>
+                </div>
+            </div>
+            {% else %}
+            <p>No data yet for sketches.</p>
+            {% endif %}
+        </section>
+
         <section class="plants-history">
             <h2>Recent Readings</h2>
             {% if history %}
@@ -83,6 +117,7 @@
                             <th>Moisture</th>
                             <th>Temp</th>
                             <th>Humidity</th>
+                            <th>Lux</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -105,6 +140,13 @@
                                     n/a
                                 {% endif %}
                             </td>
+                            <td>
+                                {% if item.lux is not none %}
+                                    {{ '%.1f'|format(item.lux) }} lx
+                                {% else %}
+                                    n/a
+                                {% endif %}
+                            </td>
                         </tr>
                         {% endfor %}
                     </tbody>
@@ -116,4 +158,121 @@
         </section>
     </div>
 </div>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script id="chart-data-json" type="application/json">{{ chart_data|tojson }}</script>
+<script>
+    const chartDataNode = document.getElementById('chart-data-json');
+    const allChartData = chartDataNode ? JSON.parse(chartDataNode.textContent) : {};
+    const select = document.getElementById('chart-device-select');
+
+    let moistureChart;
+    let humidityChart;
+    let luxChart;
+
+    function rollingAverage(values, windowSize = 5) {
+        const out = [];
+        for (let i = 0; i < values.length; i++) {
+            const start = Math.max(0, i - windowSize + 1);
+            const slice = values.slice(start, i + 1).filter(v => v !== null && v !== undefined);
+            if (!slice.length) {
+                out.push(null);
+                continue;
+            }
+            const sum = slice.reduce((acc, v) => acc + Number(v), 0);
+            out.push(sum / slice.length);
+        }
+        return out;
+    }
+
+    function makeLineChart(canvasId, label, color, labels, values) {
+        const ctx = document.getElementById(canvasId);
+        if (!ctx) return null;
+        const trend = rollingAverage(values, 5);
+        return new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels,
+                datasets: [
+                    {
+                        label,
+                        data: values,
+                        borderColor: color,
+                        backgroundColor: color + '1A',
+                        fill: true,
+                        tension: 0.25,
+                        pointRadius: 2,
+                        borderWidth: 2
+                    },
+                    {
+                        label: label + ' trend',
+                        data: trend,
+                        borderColor: color,
+                        fill: false,
+                        tension: 0.3,
+                        pointRadius: 0,
+                        borderDash: [6, 4],
+                        borderWidth: 2.5
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: true,
+                        labels: { boxWidth: 14, usePointStyle: true }
+                    }
+                },
+                scales: {
+                    x: { ticks: { maxTicksLimit: 8 } }
+                }
+            }
+        });
+    }
+
+    function destroyCharts() {
+        if (moistureChart) moistureChart.destroy();
+        if (humidityChart) humidityChart.destroy();
+        if (luxChart) luxChart.destroy();
+    }
+
+    function renderCharts(deviceId) {
+        const data = allChartData[deviceId];
+        if (!data) return;
+
+        destroyCharts();
+
+        moistureChart = makeLineChart(
+            'moistureChart',
+            'Moisture',
+            '#2d8f60',
+            data.times,
+            data.moisture
+        );
+
+        humidityChart = makeLineChart(
+            'humidityChart',
+            'Humidity',
+            '#3a76c4',
+            data.times,
+            data.humidity
+        );
+
+        luxChart = makeLineChart(
+            'luxChart',
+            'Lux',
+            '#c48a2a',
+            data.times,
+            data.lux
+        );
+    }
+
+    if (select) {
+        renderCharts(select.value);
+        select.addEventListener('change', function () {
+            renderCharts(this.value);
+        });
+    }
+</script>
 {% endblock %}

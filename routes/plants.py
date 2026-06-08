@@ -33,6 +33,7 @@ def receive_sensor_data():
     moisture = payload.get("moisture")
     temperature = payload.get("temperature")
     humidity = payload.get("humidity")
+    lux = payload.get("lux")
 
     if not device_id:
         return jsonify({"error": "device_id is required"}), 400
@@ -44,6 +45,7 @@ def receive_sensor_data():
         moisture = float(moisture)
         temperature = float(temperature) if temperature is not None else None
         humidity = float(humidity) if humidity is not None else None
+        lux = float(lux) if lux is not None else None
     except (TypeError, ValueError):
         return jsonify({"error": "Invalid numeric values"}), 400
 
@@ -51,10 +53,10 @@ def receive_sensor_data():
         c = conn.cursor()
         c.execute(
             """
-            INSERT INTO plant_sensor_readings (device_id, moisture, temperature, humidity)
-            VALUES (%s, %s, %s, %s)
+            INSERT INTO plant_sensor_readings (device_id, moisture, temperature, humidity, lux)
+            VALUES (%s, %s, %s, %s, %s)
             """,
-            (device_id, moisture, temperature, humidity),
+            (device_id, moisture, temperature, humidity, lux),
         )
 
         # Ensure each device has a config row with default threshold.
@@ -94,6 +96,7 @@ def plants_dashboard():
                 r.moisture,
                 r.temperature,
                 r.humidity,
+                r.lux,
                 COALESCE(cfg.moisture_threshold, 25) AS moisture_threshold,
                 r.recorded_at
             FROM plant_sensor_readings r
@@ -105,17 +108,17 @@ def plants_dashboard():
 
         c.execute(
             """
-            SELECT device_id, moisture, temperature, humidity, recorded_at
+            SELECT device_id, moisture, temperature, humidity, lux, recorded_at
             FROM plant_sensor_readings
             ORDER BY recorded_at DESC
-            LIMIT 100
+            LIMIT 300
             """
         )
         recent_readings = c.fetchall()
 
     plants = []
     for row in latest_readings:
-        device_id, display_name, moisture, temperature, humidity, threshold, recorded_at = row
+        device_id, display_name, moisture, temperature, humidity, lux, threshold, recorded_at = row
         plants.append(
             {
                 "device_id": device_id,
@@ -123,6 +126,7 @@ def plants_dashboard():
                 "moisture": moisture,
                 "temperature": temperature,
                 "humidity": humidity,
+                "lux": lux,
                 "threshold": threshold,
                 "needs_water": moisture is not None and moisture < threshold,
                 "recorded_at": recorded_at,
@@ -131,15 +135,34 @@ def plants_dashboard():
 
     history = []
     for row in recent_readings:
-        device_id, moisture, temperature, humidity, recorded_at = row
+        device_id, moisture, temperature, humidity, lux, recorded_at = row
         history.append(
             {
                 "device_id": device_id,
                 "moisture": moisture,
                 "temperature": temperature,
                 "humidity": humidity,
+                "lux": lux,
                 "recorded_at": recorded_at,
             }
         )
 
-    return render_template("plants.html", plants=plants, history=history)
+    chart_data = {}
+    for point in reversed(history):
+        device_id = point["device_id"]
+        if device_id not in chart_data:
+            chart_data[device_id] = {
+                "times": [],
+                "moisture": [],
+                "humidity": [],
+                "lux": [],
+            }
+
+        chart_data[device_id]["times"].append(
+            point["recorded_at"].strftime("%Y-%m-%d %H:%M:%S") if point["recorded_at"] else ""
+        )
+        chart_data[device_id]["moisture"].append(point["moisture"])
+        chart_data[device_id]["humidity"].append(point["humidity"])
+        chart_data[device_id]["lux"].append(point["lux"])
+
+    return render_template("plants.html", plants=plants, history=history, chart_data=chart_data)

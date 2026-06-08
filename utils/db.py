@@ -193,6 +193,7 @@ def init_db():
                     moisture REAL NOT NULL,
                     temperature REAL,
                     humidity REAL,
+                    lux REAL,
                     recorded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
                 )
             ''')
@@ -218,6 +219,7 @@ def init_db():
             c.execute("ALTER TABLE IF EXISTS recipes ADD COLUMN IF NOT EXISTS instructions TEXT")
             c.execute("ALTER TABLE IF EXISTS recipes ADD COLUMN IF NOT EXISTS notes TEXT")
             c.execute("ALTER TABLE IF EXISTS recipes ADD COLUMN IF NOT EXISTS created_by_user_id INTEGER")
+            c.execute("ALTER TABLE IF EXISTS plant_sensor_readings ADD COLUMN IF NOT EXISTS lux REAL")
 
             # Backfill older recipes so creator displays correctly
             c.execute("UPDATE recipes SET created_by_user_id = user_id WHERE created_by_user_id IS NULL")

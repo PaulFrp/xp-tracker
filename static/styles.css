@@ -1996,3 +1996,148 @@ body.dark-mode h2 {
 body.dark-mode label {
     color: #b0b0b0;
 }
+
+/* Plants page */
+.plants-page {
+    margin: 0;
+    background: #f3f6f5;
+}
+
+.plants-container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 24px;
+}
+
+.plants-header h1 {
+    margin: 0;
+    font-size: 2rem;
+    color: #1d3b2a;
+}
+
+.plants-header p {
+    margin-top: 8px;
+    color: #4a5b52;
+}
+
+.api-help-box {
+    background: #ffffff;
+    border-radius: 12px;
+    border-left: 5px solid #3a8f5b;
+    padding: 16px;
+    margin: 18px 0 24px 0;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.api-help-box h2 {
+    margin-top: 0;
+}
+
+.plants-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 16px;
+}
+
+.plant-card {
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 16px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+    border-top: 4px solid #3a8f5b;
+}
+
+.plant-card.needs-water {
+    border-top-color: #c44d3c;
+}
+
+.plant-card-top {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+.plant-card-top h3 {
+    margin: 0;
+    color: #213328;
+}
+
+.plant-device-id {
+    font-size: 0.85rem;
+    color: #6c7b72;
+}
+
+.plant-metric-row {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 10px;
+    color: #2f3d35;
+}
+
+.plant-status {
+    margin-top: 14px;
+    font-weight: 700;
+    padding: 8px 10px;
+    border-radius: 8px;
+}
+
+.plant-status.ok {
+    background: #e3f3e9;
+    color: #20623c;
+}
+
+.plant-status.warn {
+    background: #fbe8e5;
+    color: #8f3023;
+}
+
+.plant-time {
+    margin-top: 10px;
+    font-size: 0.85rem;
+    color: #6b766f;
+}
+
+.plants-history {
+    margin-top: 28px;
+    background: #ffffff;
+    padding: 18px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.history-table-wrap {
+    overflow-x: auto;
+}
+
+.plants-history table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.plants-history th,
+.plants-history td {
+    padding: 10px;
+    border-bottom: 1px solid #e6ece8;
+    text-align: left;
+}
+
+.plants-history th {
+    background: #f5faf7;
+    color: #284033;
+}
+
+.empty-state {
+    grid-column: 1 / -1;
+    background: #ffffff;
+    border: 1px dashed #9fb3a8;
+    border-radius: 12px;
+    padding: 18px;
+    color: #4f5f56;
+}
+
+@media (max-width: 768px) {
+    .plants-container {
+        padding: 14px;
+    }
+}

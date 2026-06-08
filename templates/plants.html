@@ -1,0 +1,119 @@
+{% extends "base.html" %}
+{% block title %}Plant Tracker{% endblock %}
+{% block content %}
+<div class="plants-page">
+    {% include "navbar.html" %}
+
+    <div class="plants-container">
+        <div class="plants-header">
+            <h1>Plant Tracker</h1>
+            <p>Live readings from your ESP32 moisture sensors.</p>
+        </div>
+
+        <div class="api-help-box">
+            <h2>ESP32 API Target</h2>
+            <p><strong>POST</strong> /api/sensor</p>
+            <p>Headers: Content-Type: application/json and x-api-key: your PLANT_API_KEY</p>
+            <p>Body fields: device_id, moisture, temperature (optional), humidity (optional)</p>
+        </div>
+
+        <section class="plants-grid">
+            {% if plants %}
+                {% for plant in plants %}
+                <article class="plant-card {% if plant.needs_water %}needs-water{% else %}healthy{% endif %}">
+                    <div class="plant-card-top">
+                        <h3>{{ plant.display_name }}</h3>
+                        <span class="plant-device-id">{{ plant.device_id }}</span>
+                    </div>
+
+                    <div class="plant-metric-row">
+                        <span>Moisture</span>
+                        <strong>{{ '%.1f'|format(plant.moisture) }}%</strong>
+                    </div>
+                    <div class="plant-metric-row">
+                        <span>Temperature</span>
+                        <strong>
+                            {% if plant.temperature is not none %}
+                                {{ '%.1f'|format(plant.temperature) }} C
+                            {% else %}
+                                n/a
+                            {% endif %}
+                        </strong>
+                    </div>
+                    <div class="plant-metric-row">
+                        <span>Humidity</span>
+                        <strong>
+                            {% if plant.humidity is not none %}
+                                {{ '%.1f'|format(plant.humidity) }}%
+                            {% else %}
+                                n/a
+                            {% endif %}
+                        </strong>
+                    </div>
+
+                    <div class="plant-status {% if plant.needs_water %}warn{% else %}ok{% endif %}">
+                        {% if plant.needs_water %}
+                            Needs water (threshold {{ '%.1f'|format(plant.threshold) }}%)
+                        {% else %}
+                            Moisture OK
+                        {% endif %}
+                    </div>
+
+                    <div class="plant-time">
+                        Last update: {{ plant.recorded_at.strftime('%Y-%m-%d %H:%M:%S') if plant.recorded_at else 'n/a' }}
+                    </div>
+                </article>
+                {% endfor %}
+            {% else %}
+                <div class="empty-state">
+                    No sensor data yet. Send the first POST to /api/sensor from your ESP32.
+                </div>
+            {% endif %}
+        </section>
+
+        <section class="plants-history">
+            <h2>Recent Readings</h2>
+            {% if history %}
+            <div class="history-table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Time</th>
+                            <th>Device</th>
+                            <th>Moisture</th>
+                            <th>Temp</th>
+                            <th>Humidity</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in history %}
+                        <tr>
+                            <td>{{ item.recorded_at.strftime('%Y-%m-%d %H:%M:%S') if item.recorded_at else 'n/a' }}</td>
+                            <td>{{ item.device_id }}</td>
+                            <td>{{ '%.1f'|format(item.moisture) }}%</td>
+                            <td>
+                                {% if item.temperature is not none %}
+                                    {{ '%.1f'|format(item.temperature) }} C
+                                {% else %}
+                                    n/a
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if item.humidity is not none %}
+                                    {{ '%.1f'|format(item.humidity) }}%
+                                {% else %}
+                                    n/a
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <p>No history available yet.</p>
+            {% endif %}
+        </section>
+    </div>
+</div>
+{% endblock %}

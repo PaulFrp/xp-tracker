@@ -185,6 +185,27 @@ def init_db():
                 )
             ''')
 
+            print("Creating plant_sensor_readings table...")
+            c.execute('''
+                CREATE TABLE IF NOT EXISTS plant_sensor_readings (
+                    id SERIAL PRIMARY KEY,
+                    device_id TEXT NOT NULL,
+                    moisture REAL NOT NULL,
+                    temperature REAL,
+                    humidity REAL,
+                    recorded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                )
+            ''')
+
+            print("Creating plant_device_config table...")
+            c.execute('''
+                CREATE TABLE IF NOT EXISTS plant_device_config (
+                    device_id TEXT PRIMARY KEY,
+                    display_name TEXT,
+                    moisture_threshold REAL DEFAULT 25
+                )
+            ''')
+
             # Add missing columns to recipes table without aborting the transaction
             print("Adding missing columns to recipes table...")
             c.execute("ALTER TABLE IF EXISTS recipes ADD COLUMN IF NOT EXISTS prep_time INTEGER")
